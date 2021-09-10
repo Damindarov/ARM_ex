@@ -223,7 +223,7 @@ if __name__ == '__main__':
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(1934 + 0 / -0.085), int(1934 + 60 / -0.085),  # средний
             7, MODE, 456, 3000, CENTER, STIFF, 0, int(3000), int(3000),
             # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный()
-            8, MODE, ANGLE, 3000, CENTER, STIFF, 0, 3000, 3200,  # мизинец
+            8, MODE, ANGLE, 3000, CENTER, STIFF, 0, 3000, 3200,  # мизинец()
 
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # правая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
