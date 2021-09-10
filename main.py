@@ -242,15 +242,15 @@ if __name__ == '__main__':
         L_Elbow = struct.unpack('h', data[34:36])[0]*-0.02 #correct
         L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
-        if (time.time() > timer):
-            timer = time.time() + 0.5
-            # print('x = ', round(-xcord, 2), 'y = ', round(ycord, 2), 'z = ', round(0.9 - zcord, 2))
-            print('L_Shoulder ',round(L_Shoulder,2),
-                  'L_Shoulder_S ',round(L_Shoulder_S,2),
-                  'L_ElbowR_R ',round(L_ElbowR_R,2),
-                  'L_Elbow ',round(L_Elbow,2),
-                  'L_WristR ',round(L_WristR,2),
-                  'L_WristS ',round(L_WristS,2))
+        # if (time.time() > timer):
+        #     timer = time.time() + 0.5
+        #     # print('x = ', round(-xcord, 2), 'y = ', round(ycord, 2), 'z = ', round(0.9 - zcord, 2))
+        #     print('L_Shoulder ',round(L_Shoulder,2),
+        #           'L_Shoulder_S ',round(L_Shoulder_S,2),
+        #           'L_ElbowR_R ',round(L_ElbowR_R,2),
+        #           'L_Elbow ',round(L_Elbow,2),
+        #           'L_WristR ',round(L_WristR,2),
+        #           'L_WristS ',round(L_WristS,2))
         #this block for fingers
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
         L_Little = (-3615 + struct.unpack('h', data[114:116])[0])*-0.085 #correct
@@ -305,9 +305,9 @@ if __name__ == '__main__':
         #             pass
         #         else:
         #             ycord = np.sign(ycord) * 0.431
-        # if(time.time() > timer):
-        #     timer = time.time()+0.5
-        #     print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
+        if(time.time() > timer):
+            timer = time.time()+0.5
+            print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
         values = (-xcord,-ycord, 0.9 - zcord)
         packer = struct.Struct('f f f')
         packed_data = packer.pack(*values)
