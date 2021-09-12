@@ -217,16 +217,18 @@ def plot_robots(rob_cnfs, traj_x, traj_y, traj_z, traj_fun=(lambda x, y: 0.5 + 0
 
 
 # plot_robots([np.deg2rad([0,90,0,-90,0,90,0]), np.deg2rad([0,0,0,0,0,0,0]), np.deg2rad([0,-90,0,90,0,-90,0])])
-def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()):
+def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict(), start = [], finish = [], steps = 2):
     """Returns all the joint configurations for the robot at different points on
       the required trajectory for a specific method """
     x = np.hstack([
-        [0.4 for _ in range(10)],
+        np.linspace(start[0], finish [0], steps),
     ])
     y = np.hstack([
-        np.linspace(-0.2, 0.4, 10),
+        np.linspace(start[1], finish [1], steps),
     ])
-    z = [0.9 for _ in x]
+    z = np.hstack([
+        np.linspace(start[2], finish [2], steps),
+    ])
     rob_cnfs = []  # will contain the result of each inverse kinematics
     start_time = time.time()
     for (i, j, k) in zip(x, y, z):
@@ -243,4 +245,4 @@ def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()
     plot_robots(rob_cnfs, traj_x=x, traj_y=y, traj_z=z)
 
 
-get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35, -20, 10, 20, 0, 60, 0]))
+get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35, -20, 10, 20, 0, 60, 0]),start = [-0.2, 0.4, 0.9], finish = [0.4, 0.4, 0.9], steps = 10)
