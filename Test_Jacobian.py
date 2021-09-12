@@ -219,7 +219,7 @@ def plot_robots(rob_cnfs, traj_x, traj_y, traj_z, traj_fun=(lambda x, y: 0.5 + 0
 # plot_robots([np.deg2rad([0,90,0,-90,0,90,0]), np.deg2rad([0,0,0,0,0,0,0]), np.deg2rad([0,-90,0,90,0,-90,0])])
 def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()):
     """Returns all the joint configurations for the robot at different points on
-      the required trajectory for a specific method"""
+      the required trajectory for a specific method """
     x = np.hstack([
         [0.4 for _ in range(10)],
     ])
@@ -243,6 +243,4 @@ def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()
     plot_robots(rob_cnfs, traj_x=x, traj_y=y, traj_z=z)
 
 
-
-
-get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35,-20,10,20,0,60,0]))
+get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35, -20, 10, 20, 0, 60, 0]))
