@@ -245,4 +245,7 @@ def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()
     plot_robots(rob_cnfs, traj_x=x, traj_y=y, traj_z=z)
 
 
+
+#get position from kuka ros packag
+
 get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35, -20, 10, 20, 0, 60, 0]),start = [-0.2, 0.4, 0.9], finish = [0.4, 0.4, 0.9], steps = 10)
