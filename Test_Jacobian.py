@@ -14,47 +14,33 @@ a1, a2, a3, a4 = 0.36, 0.42, 0.4, 0.126
 pi = np.pi
 pi_sym = sym.pi
 
-
 def weighted_pseudo(q0, p_goal, weights=[10, 30, 25, 20, 90, 42, 57], time_step=0.1, max_iteration=3000,
                     accuracy=0.001):
     assert np.linalg.norm(p_goal) < 0.85 * np.sum([a1, a2, a3, a4]), "Robot Length constraint violated"
-
     q_n0 = q0
     p = FK(q_n0)[:3, -1]
     t1_dot = p_goal - p
     e = np.linalg.norm(t1_dot)
-
     Tt = np.eye(6)[:3]
     v1 = np.zeros(3)
     q_n1 = q_n0
     q_dot = np.zeros(len(q0))
     δt = time_step
     i = 0
-
     start_time = time.time()
     while True:
         if (e < accuracy):
             break
-
         fk = FK(q_n0)
-
         p = fk[:3, -1]
-
         t1_dot = p_goal - p
-
         e = np.linalg.norm(t1_dot)
-
         J1 = jacobian(q_n0)[:3]
-
         w_inv = np.linalg.inv(np.diag(weights))
         j1_hash = w_inv @ J1.T @ np.linalg.inv(J1 @ w_inv @ J1.T)
-
         q_dot = j1_hash @ t1_dot
-
         q_n1 = q_n0 + (δt * q_dot)
-
         q_n0 = q_n1
-
         i += 1
         if (i > max_iteration):
             print("No convergence")
@@ -215,42 +201,21 @@ def plot_robots(rob_cnfs, traj_x, traj_y, traj_z, traj_fun=(lambda x, y: 0.5 + 0
 def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()):
     """Returns all the joint configurations for the robot at different points on
       the required trajectory for a specific method"""
-
     x = np.hstack([
         [0.4 for _ in range(10)],
     ])
-
     y = np.hstack([
         np.linspace(-0.2, 0.4, 10),
     ])
-
     z = [0.9 for _ in x]
-
-    # x = np.hstack([
-    #         [ 0.4 for _ in range(5) ],
-    #         [ 0.2 for _ in range(5)],
-    #         np.linspace(0.2, 0.4, 5),
-    #         np.linspace(0.2, 0.4, 5) ])
-
-    # y = np.hstack([
-    #         np.linspace(0.2, 0.4, 5),
-    #         np.linspace(0.2, 0.4,5),
-    #         [ 0.4 for _ in range(5) ],
-    #         [ 0.2 for _ in range(5)]])
-
-    # z = [ 0.9 for _ in x ]
     rob_cnfs = []  # will contain the result of each inverse kinematics
-
     start_time = time.time()
-
     for (i, j, k) in zip(x, y, z):
         pos = [i, j, k]
-
         q = method_fun(q0, pos, **kwargs)
-
         rob_cnfs.append(q)
+        print(rob_cnfs)
         # q0 = q     # Sets the new initial joint configurations to the previous
-
     end_time = time.time()
 
     print(f"\n{np.round(end_time - start_time, 1)} seconds : Total time using {method_fun.__name__} \n")
@@ -297,4 +262,4 @@ def null_space_method(q0, p_goal, weights=[1, 3, 1, 2, 9, 4, 5], time_step=0.01,
     return np.mod(q_n1, 2 * np.pi)
 
 
-get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([10,-10,0,20,0,-60,0]))
+get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35,-20,10,20,0,60,0]))
