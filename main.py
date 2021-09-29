@@ -236,12 +236,27 @@ if __name__ == '__main__':
         send(pa)
         data, addr = sock.recvfrom(310)
 
-        L_Shoulder = struct.unpack('h', data[2:4])[0]*-0.085#incorrect?
+        L_Shoulder = struct.unpack('h', data[2:4])[0]*0.085#incorrect?
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150)*0.08789063 #correct
         L_ElbowR_R = (struct.unpack('h', data[268:270])[0] - 2088)*0.08789063 #correct
         L_Elbow = struct.unpack('h', data[34:36])[0]*-0.02 #correct
         L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
+
+        L_Shoulder_S1 = 0
+        L_ElbowR_R1 = 0
+        if np.sign(L_Shoulder_S) == -1:
+            L_Shoulder_S1 = -(185.89 - abs(L_Shoulder_S))
+        if np.sign(L_Shoulder_S) == 1:
+            L_Shoulder_S1 = 170.95 - abs(L_Shoulder_S)
+        if L_Shoulder_S == 170.95:
+            L_Shoulder_S1 = 0
+
+        if np.sign(L_ElbowR_R) == -1:
+            L_ElbowR_R1 = -(183.52 - abs(L_ElbowR_R))
+        if np.sign(L_ElbowR_R) == 1:
+            L_ElbowR_R1 = 176.4 - abs(L_ElbowR_R)
+
         # if (time.time() > timer):
         #     timer = time.time() + 0.5
         #     # print('x = ', round(-xcord, 2), 'y = ', round(ycord, 2), 'z = ', round(0.9 - zcord, 2))
@@ -252,13 +267,14 @@ if __name__ == '__main__':
         #           'L_WristR ',round(L_WristR,2),
         #           'L_WristS ',round(L_WristS,2))
         #this block for fingers
+
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
         L_Little = (-3615 + struct.unpack('h', data[114:116])[0])*-0.085 #correct
         L_Middle = -(1944 - struct.unpack('h', data[82:84])[0])*0.085 #correct
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
 
-        q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S), math.radians(L_ElbowR_R),math.radians(L_Elbow), math.radians(L_WristR)
+        q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S1), math.radians(L_ElbowR_R1),math.radians(L_Elbow), math.radians(L_WristR)
 
         T01 = np.eye(4)@Ry(math.pi)
         T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
@@ -308,14 +324,8 @@ if __name__ == '__main__':
         if(time.time() > timer):
             timer = time.time()+0.5
             # print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
-            L_Shoulder_S1 = 0
-            if np.sign(L_Shoulder_S) == -1:
-                L_Shoulder_S1 = -(185.89 - abs(L_Shoulder_S))
-            if np.sign(L_Shoulder_S) == 1:
-                L_Shoulder_S1 = 170.95 - abs(L_Shoulder_S)
-            if L_Shoulder_S == 170.95:
-                L_Shoulder_S1 = 0
-            print('q1', round(L_Shoulder,2), 'q2', round(L_Shoulder_S1,2), 'q3', round(L_ElbowR_R,2), 'q4', round(L_Elbow,2), 'q5', round(L_WristR,2))
+
+            # print('q1', round(L_Shoulder,2), 'q2', round(L_Shoulder_S1,2), 'q3', round(L_ElbowR_R1,2), 'q4', round(L_Elbow,2), 'q5', round(L_WristR,2))
         values = (-xcord,-ycord, 0.9 - zcord)
         packer = struct.Struct('f f f')
         packed_data = packer.pack(*values)
