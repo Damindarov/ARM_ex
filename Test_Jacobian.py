@@ -20,6 +20,14 @@ pi_sym = sym.pi
 #!/usr/bin/env python
 # license removed for brevity
 
+def callback(data):
+    rospy.loginfo(rospy.get_name()+"I heard %s",data.data)
+
+def listener():
+    rospy.init_node('listener_from_Jacobean', anonymous=True)
+    rospy.Subscriber("data_kukas", String, callback)
+    rospy.spin()
+
 def talker(q1, q2, q3, q4, q5, q6, q7):
     pub_p = rospy.Publisher('lefttop_point', Float32MultiArray, queue_size=1)
     rospy.init_node('talker', anonymous=True)
@@ -248,4 +256,5 @@ def get_cnfs(method_fun, q0=np.deg2rad([0, 30, 0, -20, 0, 45, 0]), kwargs=dict()
 
 #get position from kuka ros packag
 
+listener()
 get_cnfs(method_fun=weighted_pseudo, q0=np.deg2rad([35, -20, 10, 20, 0, 60, 0]),start = [-0.2, 0.4, 0.9], finish = [0.4, 0.4, 0.9], steps = 10)

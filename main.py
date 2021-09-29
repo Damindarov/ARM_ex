@@ -307,7 +307,15 @@ if __name__ == '__main__':
         #             ycord = np.sign(ycord) * 0.431
         if(time.time() > timer):
             timer = time.time()+0.5
-            print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
+            # print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
+            L_Shoulder_S1 = 0
+            if np.sign(L_Shoulder_S) == -1:
+                L_Shoulder_S1 = -(185.89 - abs(L_Shoulder_S))
+            if np.sign(L_Shoulder_S) == 1:
+                L_Shoulder_S1 = 170.95 - abs(L_Shoulder_S)
+            if L_Shoulder_S == 170.95:
+                L_Shoulder_S1 = 0
+            print('q1', round(L_Shoulder,2), 'q2', round(L_Shoulder_S1,2), 'q3', round(L_ElbowR_R,2), 'q4', round(L_Elbow,2), 'q5', round(L_WristR,2))
         values = (-xcord,-ycord, 0.9 - zcord)
         packer = struct.Struct('f f f')
         packed_data = packer.pack(*values)
