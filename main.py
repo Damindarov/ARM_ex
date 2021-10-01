@@ -208,6 +208,7 @@ if __name__ == '__main__':
     time_p = time.time()
     fig = go.Figure()
     timer = 0
+    minq1,maxq1,minq3,maxq3,minq4,maxq4 = 0,0,0,0,0,0
     while (True):
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -296,9 +297,9 @@ if __name__ == '__main__':
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
         z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
         #print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
-        # sock.close()
+        sock.close()
         # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # server_address = ('10.100.20.121', 10000)
+        # server_address = ('10.100.20.147', 10000)
         # sock.connect(server_address)
 
 
@@ -321,19 +322,45 @@ if __name__ == '__main__':
         #             pass
         #         else:
         #             ycord = np.sign(ycord) * 0.431
+        if maxq1 < q1:
+            maxq1 = q1
+        if minq1 > q1:
+            minq1 = q1
+
+        if maxq3 < q3:
+            maxq3 = q3
+        if minq3 > q3:
+            minq3 = q3
+
+        if maxq4 < q4:
+            maxq4 = q4
+        if minq4 > q4:
+            minq4 = q4
         if(time.time() > timer):
             timer = time.time()+0.5
             # print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
 
-            # print('q1', round(L_Shoulder,2), 'q2', round(L_Shoulder_S1,2), 'q3', round(L_ElbowR_R1,2), 'q4', round(L_Elbow,2), 'q5', round(L_WristR,2))
-        values = (-xcord,-ycord, 0.9 - zcord)
-        packer = struct.Struct('f f f')
-        packed_data = packer.pack(*values)
+            # print('q1', round(q1, 2), 'q2', round(q2, 2), 'q3', round(q3, 2), 'q4', round(q4, 2), 'q5', round(q5, 2))
+            # print('q1', round(q1, 2),  'q3', round(q3, 2), 'q4', round(q4, 2))
 
+            # print('maxq1', round(maxq1,3), 'minq1', round(minq1,3),
+            #       'maxq3', round(maxq3,3), 'minq3', round(minq3,3),
+            #       'maxq4', round(maxq4,3), 'minq4', round(minq4,3))
+            # values = (-xcord,-ycord, 0.9 - zcord)
+            '''maxq1 2.703 minq1 -0.534 maxq3 0.904 minq3 -1.171 maxq4 0.023 minq4 -1.99'''
+
+
+        # values = (q1, q3, q4)
+        # packer = struct.Struct('f f f')
+        # packed_data = packer.pack(*values)
+        #
         # try:
         #     sock.sendall(packed_data)
         # finally:
         #     sock.close()
+        #
+
+
     # else:
     #     print('mistake pose')
         # # print((T06)[2][3])
