@@ -26,6 +26,7 @@
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32MultiArray.h>
 std::vector<float> desired_pose={0, 0, 0};
+std::vector<float> joint_desired_pose={0, 0, 0};//q1,q3,q4 from arm to ste same kuka
 std::vector<float> desired_posekuka={0, 0, 0};
 
 // void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
@@ -46,9 +47,9 @@ void pose_callback(std_msgs::Float32MultiArray msg)
 {
    // if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
     {
-        desired_pose[0] = msg.data[0];
-        desired_pose[1] = msg.data[1];
-        desired_pose[2] = msg.data[2];
+        joint_desired_pose[0] = msg.data[0];
+        joint_desired_pose[1] = msg.data[1];
+        joint_desired_pose[2] = msg.data[2];
     }
     // else
     // {
@@ -74,7 +75,7 @@ int main(int argc, char **argv)
     ros::AsyncSpinner spinner(1);
     spinner.start();
     // Wait a bit, so that you can be sure the subscribers are connected.
-    ros::Duration(0.5).sleep();
+    ros::Duration(0.1).sleep();
 
     // *** decleare ***
     // services
@@ -98,8 +99,8 @@ int main(int argc, char **argv)
     // cartesian velocity msg
     geometry_msgs::Twist cartesian_velocity;
     
-    double vel = 0.02;
-    double Jvel = 0.2;
+    double vel = 0.05;
+    double Jvel = 0.15;
     cartesian_velocity.linear.x = vel;
     cartesian_velocity.linear.y = vel;
     cartesian_velocity.linear.z = vel;
@@ -126,26 +127,35 @@ int main(int argc, char **argv)
     jp_state.init("iiwa");
     // set the cartesian and joints velocity limit
     c_vel.setMaxCartesianVelocity(cartesian_velocity); 
-    j_vel.setSmartServoJointSpeedLimits(0.05, 0.05);
+    j_vel.setSmartServoJointSpeedLimits(0.25, 1.0);
     ros::Duration(0.5).sleep();  // wait to initialize ros topics
     std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
     while(true){     
         auto cartesian_position = cp_state.getPose();
+        auto joint_position = jp_state.getPosition();
+                
+
+        //init_pos = cartesian_position.poseStamped;
         
 
-        init_pos = cartesian_position.poseStamped;
-        init_pos.pose.position.z = init_pos.pose.position.z + 0.08;
+        
+        //init_pos.pose.position.z = init_pos.pose.position.z + 0.08;
         //my_iiwa_ros_object.getPathParametersService().setJointRelativeVelocity(0.1)
         //std::cout<<std::to_string(jv_state.getVelocity());
         //std::cout<<std::to_string(init_pos.pose.position.x)<<", "<<std::to_string(init_pos.pose.position.y)<<", "<<std::to_string(init_pos.pose.position.z)<<std::endl;
         //ros::Duration(8.5).sleep();
         // init_pos = joint_position.
-        if(desired_pose[0] > 0){
-            init_pos.pose.position.x = desired_pose[0];
-            init_pos.pose.position.y = desired_pose[1];
-            init_pos.pose.position.z = desired_pose[2];
-            cp_command.setPose(init_pos);
-            std::cout<<std::to_string(init_pos.pose.position.x)<<", "<<std::to_string(init_pos.pose.position.y)<<", "<<std::to_string(init_pos.pose.position.z)<<std::endl;
+        if(fabs(joint_desired_pose[0] - joint_position.position.a4) > 0 or
+	   fabs(joint_desired_pose[1] - joint_position.position.a1) > 0 or
+           fabs(joint_desired_pose[2] - joint_position.position.a6) > 0){
+            joint_position.position.a1 = joint_desired_pose[1];
+            //joint_position.position.a6 = joint_desired_pose[2];
+            //joint_position.position.a4 = -3.14/2 - joint_desired_pose[0];
+            //init_pos.pose.position.x = desired_pose[0];
+            //init_pos.pose.position.y = desired_pose[1];
+            //init_pos.pose.position.z = desired_pose[2];
+            jp_command.setPosition(joint_position);
+           //std::cout<<std::to_string(joint_desired_pose[0])<<", "<<std::to_string(init_pos.pose.position.y)<<", "<<std::to_string(init_pos.pose.position.z)<<std::endl;
         }
     }
 

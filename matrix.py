@@ -1,5 +1,6 @@
 import numpy as np
 import sympy as sym
+
 def Rx(q):
   T = np.array([[1,         0,          0, 0],
                 [0, np.cos(q), -np.sin(q), 0],
