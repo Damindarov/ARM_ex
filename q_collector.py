@@ -386,21 +386,6 @@ if __name__ == '__main__':
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
 
-        L_Shoulder_S1 = 0
-        L_ElbowR_R1 = 0
-        if np.sign(L_Shoulder_S) == -1:
-            L_Shoulder_S1 = -(185.89 - abs(L_Shoulder_S))
-        if np.sign(L_Shoulder_S) == 1:
-            L_Shoulder_S1 = 170.95 - abs(L_Shoulder_S)
-        if L_Shoulder_S == 170.95:
-            L_Shoulder_S1 = 0
-
-        if np.sign(L_ElbowR_R) == -1:
-            L_ElbowR_R1 = -(183.52 - abs(L_ElbowR_R))
-        if np.sign(L_ElbowR_R) == 1:
-            L_ElbowR_R1 = 176.4 - abs(L_ElbowR_R)
-
-
         q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S), math.radians(L_ElbowR_R),math.radians(L_Elbow), math.radians(L_WristR)
 
         T01 = np.eye(4)
