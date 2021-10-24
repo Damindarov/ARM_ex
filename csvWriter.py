@@ -394,7 +394,7 @@ if __name__ == '__main__':
 
     fig = go.Figure()
 
-    fields = ['X', 'Y', 'Z']
+    fields = ['q1', 'q2', 'q3', 'q4', 'q5']
     rows = []
     print(time.time())
     start = time.time()
@@ -462,7 +462,7 @@ if __name__ == '__main__':
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
         z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
         print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
-        new_row = [T06[0][3], T06[1][3], T06[2][3]]
+        new_row = [q1, q2, q3, q4, q5]
         rows.append(new_row)
         sock.close()
         time.sleep(0.01)
