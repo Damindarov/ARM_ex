@@ -13,7 +13,7 @@ import math
 import matplotlib.pyplot as plt
 from IPython.display import clear_output
 
-a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
+a1, a2, a3, a4 = 0.08, 0.39, 0, 0.32
 def Rx(q):
   T = np.array([[1,         0,          0, 0],
                 [0, np.cos(q), -np.sin(q), 0],
@@ -200,9 +200,9 @@ def FK(q1,q2,q3,q4,q5):
     T01 = np.eye(4)
     T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
     T23 = Ry(q2) @ Tz(a2)  # np.eye(4)# Joint 2 to 3
-    T34 = Rz(q3) @ Rx(q4)  # Joint 3 to 4
-    T45 = Tz(a3)  # Rx(q3)                    # Joint 4 to 5
-    T56 = Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
+    T34 = Rz(q3) @ Rx(q4) @ Tz(a3+a4)  # Joint 3 to 4
+    T45 = np.eye(4)#Tz(a3)  # Rx(q3)                    # Joint 4 to 5
+    T56 = np.eye(4)#Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
     T67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7
     T7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E
 
@@ -223,19 +223,20 @@ def FK(q1,q2,q3,q4,q5):
     return x_pos, y_pos, z_pos
 
 
-data= pd.read_csv("q_pointcloud.csv")
+data= pd.read_csv("q_pointcloud (5).csv")
 
 q1 = data['q1'].values.tolist()
 q2 = data['q2'].values.tolist()
 q3 = data['q3'].values.tolist()
 q4 = data['q4'].values.tolist()
 q5 = data['q5'].values.tolist()
-
+print(q3)
 
 X = []
 Y= []
 Z = []
 for i in range(len(q5)):
+    # x, y, z = FK(q1[i],q2[i],q3[i],q4[i],q5[i])
     x, y, z = FK(q1[i],q2[i],q3[i],q4[i],q5[i])
     X.append(x)
     Y.append(y)
@@ -248,7 +249,16 @@ fig2 = go.Figure(data=[go.Scatter3d(x=X, y=Y, z=Z, mode='markers', marker=dict(
         opacity=0.8
     ))])
 
-T01 = np.eye(4)@Rx(math.pi)
+# T01 = np.eye(4)@Rx(math.pi)
+# T12 = Rx(0) @ Tx(a1)  # Joint 1 to 2
+# T23 = Ry(0) @ Tz(a2)  # np.eye(4)# Joint 2 to 3
+# T34 = Rz(0) @ Rx(0)  # Joint 3 to 4
+# T45 = Tz(a3)  # Rx(q3)                    # Joint 4 to 5
+# T56 = Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
+# T67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7
+# T7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E
+
+T01 = np.eye(4)
 T12 = Rx(0) @ Tx(a1)  # Joint 1 to 2
 T23 = Ry(0) @ Tz(a2)  # np.eye(4)# Joint 2 to 3
 T34 = Rz(0) @ Rx(0)  # Joint 3 to 4
