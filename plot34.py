@@ -223,7 +223,7 @@ def FK(q1,q2,q3,q4,q5):
     return x_pos, y_pos, z_pos
 
 
-data= pd.read_csv("q_pointcloud (5).csv")
+data= pd.read_csv("q_pointcloud_reduced.csv")
 
 q1 = data['q1'].values.tolist()
 q2 = data['q2'].values.tolist()
@@ -233,7 +233,7 @@ q5 = data['q5'].values.tolist()
 print(q3)
 
 X = []
-Y= []
+Y = []
 Z = []
 for i in range(len(q5)):
     # x, y, z = FK(q1[i],q2[i],q3[i],q4[i],q5[i])
