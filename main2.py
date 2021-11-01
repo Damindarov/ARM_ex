@@ -190,8 +190,6 @@ if __name__ == '__main__':
     e_prev = 0
     Integral = 0
     sing_Little = np.sign(rer)
-    time_step = time.time()
-    inc = 1
     while True:
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -200,13 +198,13 @@ if __name__ == '__main__':
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(0 / 0.087 - 2088), int(11 / 0.087 - 2088),  # кисть
-            3, MODE,-100, TORQUE, CENTER, STIFF, 0, 2600, 2500,  # локоть
+            3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(1934 + 0 / -0.085), int(1934 + 60 / -0.085),  # средний
             7, MODE, 456, 3000, CENTER, STIFF, 0, int(3800), int(3900),
             # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный
-            8, MODE, 0, 3000, CENTER, STIFF, 0, 3074, 3074,  # мизинец
+            8, MODE, pwm_little, 3000, CENTER, STIFF, 36, 3074, 3074,  # мизинец
 
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # правая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
@@ -215,7 +213,7 @@ if __name__ == '__main__':
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             7, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-            8, MODE, 0, TORQUE, CENTER, STIFF, 36, 1616 + 550, 1616 + 700)
+            8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 1616 + 550, 1616 + 700)
         send(pa)
         data, addr = sock.recvfrom(310)
         time_step_start = time.time()
@@ -225,7 +223,7 @@ if __name__ == '__main__':
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150)*0.08789063 #correct
         L_ElbowR_R = (struct.unpack('h', data[268:270])[0] - 2088)*0.08789063 #correct
         L_Elbow = struct.unpack('h', data[34:36])[0]*-0.02 #correct
-        L_WristR = (-2200 - struct.unpack('h', data[18:20])[0])*0.065 #correct
+        L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
         #this block for fingers
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
@@ -254,10 +252,10 @@ if __name__ == '__main__':
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
         z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
         # print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
-        print('L_Shoulder', L_Shoulder,'ElbowR_R', round(L_ElbowR_R,2) , 'Elbow', round(L_Elbow,2), 'Wristh', round(L_WristR,2), 'L_WristS', round(L_WristS,2))
+
         goal_angle = 45
-        # print((-1466 + struct.unpack('h', data[242:244])[0]), -(-3615 + struct.unpack('h', data[114:116])[0]))
-        err = (-1416 + struct.unpack('h', data[242:244])[0]) - (-3615 + struct.unpack('h', data[114:116])[0])
+
+        err = goal_angle - L_Little
         Kp = 1.1
         Kd = 0.54
         Ki = 2.0
@@ -270,7 +268,7 @@ if __name__ == '__main__':
             if np.sign(goal_angle - L_Little) != sing_Little:
                 sing_Little = np.sign(goal_angle - L_Little)
                 Integral = 0
-            # print('Prop = ', Proportionial, 'Int ',Integral, 'dif ', Differ)
+            print('Prop = ', Proportionial, 'Int ',Integral, 'dif ', Differ)
             # print('L-little ',L_Little, 'ValToLittle ',valToLittle, struct.unpack('h', data[114:116])[0], pwm_little)
 
             # new_row = [q1, q2, q3, q4, q5]
