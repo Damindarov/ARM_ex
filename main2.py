@@ -190,6 +190,8 @@ if __name__ == '__main__':
     e_prev = 0
     Integral = 0
     sing_Little = np.sign(rer)
+    time_step = time.time()
+    inc = 1
     while True:
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -204,7 +206,7 @@ if __name__ == '__main__':
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(1934 + 0 / -0.085), int(1934 + 60 / -0.085),  # средний
             7, MODE, 456, 3000, CENTER, STIFF, 0, int(3800), int(3900),
             # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный
-            8, MODE, pwm_little, 3000, CENTER, STIFF, 36, 3074, 3074,  # мизинец
+            8, MODE, 0, 3000, CENTER, STIFF, 0, 3074, 3074,  # мизинец
 
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # правая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
@@ -213,7 +215,7 @@ if __name__ == '__main__':
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             7, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-            8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 1616 + 550, 1616 + 700)
+            8, MODE, pwm_little, TORQUE, CENTER, STIFF, 36, 1616 + 550, 1616 + 700)
         send(pa)
         data, addr = sock.recvfrom(310)
         time_step_start = time.time()
@@ -254,8 +256,8 @@ if __name__ == '__main__':
         # print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
 
         goal_angle = 45
-
-        err = goal_angle - L_Little
+        print(-1466 + struct.unpack('h', data[242:244])[0],L_Little)
+        err = (-1416 + struct.unpack('h', data[242:244])[0]) - (-3615 + struct.unpack('h', data[114:116])[0])
         Kp = 1.1
         Kd = 0.54
         Ki = 2.0
@@ -268,7 +270,7 @@ if __name__ == '__main__':
             if np.sign(goal_angle - L_Little) != sing_Little:
                 sing_Little = np.sign(goal_angle - L_Little)
                 Integral = 0
-            print('Prop = ', Proportionial, 'Int ',Integral, 'dif ', Differ)
+            # print('Prop = ', Proportionial, 'Int ',Integral, 'dif ', Differ)
             # print('L-little ',L_Little, 'ValToLittle ',valToLittle, struct.unpack('h', data[114:116])[0], pwm_little)
 
             # new_row = [q1, q2, q3, q4, q5]
