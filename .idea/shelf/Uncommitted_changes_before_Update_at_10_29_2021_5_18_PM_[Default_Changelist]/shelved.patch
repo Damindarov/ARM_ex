@@ -1,0 +1,24 @@
+Index: plot34.py
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.BaseRevisionTextPatchEP
+<+>import plotly.graph_objects as go\r\nimport pandas as pd\r\nimport sympy as sym\r\nsym.init_printing()\r\nfrom matrix import *\r\n\r\na1, a2, a3, a4 = 0.08, 0.39, 0, 0.32\r\ndef FK(q1,q2,q3,q4,q5):\r\n\r\n    T01 = np.eye(4)\r\n    T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2\r\n    T23 = Ry(q2) @ Tz(a2)  # np.eye(4)# Joint 2 to 3\r\n    T34 = Rz(q3) @ Rx(q4) @ Tz(a3+a4)  # Joint 3 to 4\r\n    T45 = np.eye(4)#Tz(a3)  # Rx(q3)                    # Joint 4 to 5\r\n    T56 = np.eye(4)#Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6\r\n    T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56\r\n\r\n    x_pos = T06[0, -1]\r\n    y_pos = T06[1, -1]\r\n    z_pos = T06[2, -1]\r\n    return x_pos, y_pos, z_pos\r\n\r\ndata= pd.read_csv(\"q_pointcloud_reduced.csv\")\r\n\r\nq1 = data['q1'].values.tolist()\r\nq2 = data['q2'].values.tolist()\r\nq3 = data['q3'].values.tolist()\r\nq4 = data['q4'].values.tolist()\r\nq5 = data['q5'].values.tolist()\r\nX = []\r\nY = []\r\nZ = []\r\nfor i in range(len(q5)):\r\n    # x, y, z = FK(q1[i],q2[i],q3[i],q4[i],q5[i])\r\n    x, y, z = FK(q1[i],q2[i],q3[i],q4[i],q5[i])\r\n    X.append(x)\r\n    Y.append(y)\r\n    Z.append(z)\r\n\r\nfig2 = go.Figure(data=[go.Scatter3d(x=X, y=Y, z=Z, mode='markers', marker=dict(\r\n        size=2,\r\n        color=z,                # set color to an array/list of desired values\r\n        colorscale='Viridis',   # choose a colorscale\r\n        opacity=0.8\r\n    ))])\r\n\r\nT01 = np.eye(4)\r\nT12 = Rx(0) @ Tx(a1)  # Joint 1 to 2\r\nT23 = Ry(0) @ Tz(a2)  # np.eye(4)# Joint 2 to 3\r\nT34 = Rz(0) @ Rx(0)  # Joint 3 to 4\r\nT45 = Tz(a3)  # Rx(q3)                    # Joint 4 to 5\r\nT56 = Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6\r\nT67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7\r\nT7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E\r\n\r\nT02 = T01 @ T12\r\nT03 = T01 @ T12 @ T23\r\nT04 = T01 @ T12 @ T23 @ T34\r\nT05 = T01 @ T12 @ T23 @ T34 @ T45\r\nT06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56\r\nT07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67\r\nT0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E\r\nx_pos = [T01[0,-1], T02[0,-1], T03[0,-1], T04[0,-1], T05[0,-1], T06[0,-1], T07[0,-1], T0E[0,-1]]\r\ny_pos = [T01[1,-1], T02[1,-1], T03[1,-1], T04[1,-1], T05[1,-1], T06[1,-1], T07[1,-1], T0E[1,-1]]\r\nz_pos = [T01[2,-1], T02[2,-1], T03[2,-1], T04[2,-1], T05[2,-1], T06[2,-1], T07[2,-1], T0E[2,-1]]\r\nfig2.add_trace(go.Scatter3d(x=x_pos, y=y_pos, z=z_pos,\r\n                                   mode='lines+markers',marker_color='rgba(152, 13, 0, .8)',marker=dict(\r\n            color='LightSkyBlue',\r\n            size=8,\r\n            line=dict(\r\n                color=\"aliceblue\",\r\n                width=8\r\n            )\r\n        )))\r\nfig2.update_yaxes(range=[-1, 1])\r\nfig2.update_xaxes(range=[-1, 1])\r\nfig2.show()\r\n
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/plot34.py b/plot34.py
+--- a/plot34.py	(revision a51e5a9b3d7b604e616cab279410d2318e307c15)
++++ b/plot34.py	(date 1635515463419)
+@@ -46,10 +46,10 @@
+ 
+ T01 = np.eye(4)
+ T12 = Rx(0) @ Tx(a1)  # Joint 1 to 2
+-T23 = Ry(0) @ Tz(a2)  # np.eye(4)# Joint 2 to 3
++T23 = Ry(0) @ Tz(-a2)  # np.eye(4)# Joint 2 to 3
+ T34 = Rz(0) @ Rx(0)  # Joint 3 to 4
+-T45 = Tz(a3)  # Rx(q3)                    # Joint 4 to 5
+-T56 = Tz(a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
++T45 = Tz(-a3)  # Rx(q3)                    # Joint 4 to 5
++T56 = Tz(-a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
+ T67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7
+ T7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E
+ 
