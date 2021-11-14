@@ -224,8 +224,8 @@ if __name__ == '__main__':
         L_Shoulder = struct.unpack('h', data[2:4])[0]*-0.085#incorrect?
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150)*0.08789063 #correct
         L_ElbowR_R = (struct.unpack('h', data[268:270])[0] - 2088)*0.08789063 #correct
-        L_Elbow = struct.unpack('h', data[34:36])[0]*-0.02 #correct
-        L_WristR = (-2200 - struct.unpack('h', data[18:20])[0])*0.065 #correct
+        L_Elbow = struct.unpack('h', data[34:36])[0]*0.02 #correct
+        L_WristR = (-1100 - struct.unpack('h', data[18:20])[0])*0.065 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
         #this block for fingers
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
@@ -234,7 +234,7 @@ if __name__ == '__main__':
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
 
-        q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S), math.radians(L_ElbowR_R),math.radians(L_Elbow), math.radians(L_WristR)
+        q1, q2, q3, q4, q5 = np.deg2rad(L_Shoulder/2 + 45), np.deg2rad(L_Shoulder_S), np.deg2rad(L_ElbowR_R+15),np.deg2rad(L_Elbow - 45) - pi/2, np.deg2rad(L_WristR)
 
         T01 = np.eye(4)@Ry(math.pi)
         T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
@@ -254,7 +254,7 @@ if __name__ == '__main__':
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
         z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
         # print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
-        print('L_Shoulder', L_Shoulder,'ElbowR_R', round(L_ElbowR_R,2) , 'Elbow', round(L_Elbow,2), 'Wristh', round(L_WristR,2), 'L_WristS', round(L_WristS,2))
+        # print('L_Shoulder', round(L_Shoulder,2), 'ElbowR_R', round(L_ElbowR_R,2) , 'Elbow', round(L_Elbow - np.rad2deg(pi/2),2), 'Wristh', round(L_WristR,2), 'L_WristS', round(L_WristS,2))
         goal_angle = 45
         # print((-1466 + struct.unpack('h', data[242:244])[0]), -(-3615 + struct.unpack('h', data[114:116])[0]))
         err = (-1416 + struct.unpack('h', data[242:244])[0]) - (-3615 + struct.unpack('h', data[114:116])[0])
@@ -278,3 +278,18 @@ if __name__ == '__main__':
         sock.close()
         time.sleep(0.05)
         time_step_finish = time_step_start
+        if(q4 < -1.56):
+            q4 = -1.56
+
+
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('10.100.20.22', 10000)
+        sock.connect(server_address)
+        print(q4)
+        values = (q3, q1, q4, q5)
+        packer = struct.Struct('f f f f')
+        packed_data = packer.pack(*values)
+        try:
+            sock.sendall(packed_data)
+        finally:
+            sock.close()

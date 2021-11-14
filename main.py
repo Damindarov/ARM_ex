@@ -244,6 +244,8 @@ if __name__ == '__main__':
         L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
 
+        print('Elbow value',L_Elbow)
+
         L_Shoulder_S1 = 0
         L_ElbowR_R1 = 0
         if np.sign(L_Shoulder_S) == -1:
