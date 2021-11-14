@@ -196,7 +196,7 @@ if __name__ == '__main__':
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((UDP_IP, UDP_PORT))
-
+        # def send_pack(socket,[]PWM,[]POW_MIN,[]POS_MAX)
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
@@ -234,6 +234,7 @@ if __name__ == '__main__':
         L_Middle = -(1944 - struct.unpack('h', data[82:84])[0])*0.085 #correct
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
+
 
         q1, q2, q3, q4, q5 = np.deg2rad(L_Shoulder/2 + 45), np.deg2rad(L_Shoulder_S), np.deg2rad(L_ElbowR_R+15),np.deg2rad(L_Elbow - 45) - pi/2, np.deg2rad(L_WristR)
 
