@@ -196,7 +196,6 @@ if __name__ == '__main__':
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((UDP_IP, UDP_PORT))
-
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
@@ -228,7 +227,6 @@ if __name__ == '__main__':
         L_Elbow = struct.unpack('h', data[34:36])[0]*0.02 #correct
         L_WristR = (-1100 - struct.unpack('h', data[18:20])[0])*0.065 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
-        L_WristF = ((struct.unpack('h', data[266:268])[0]) + 2230) * -0.08789063  # incorrect?
         #this block for fingers
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
         L_Little = (-3615 + struct.unpack('h', data[114:116])[0])*-0.085 #correct
