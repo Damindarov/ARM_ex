@@ -4,6 +4,7 @@ from struct import *
 import numpy as np
 import sympy as sym
 sym.init_printing()
+import comunication as cs
 import math
 import csv
 import plotly.io as pio
@@ -192,6 +193,7 @@ if __name__ == '__main__':
     sing_Little = np.sign(rer)
     time_step = time.time()
     inc = 1
+    css = cs.comunication()
     while True:
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -199,7 +201,7 @@ if __name__ == '__main__':
         # def send_pack(socket,[]PWM,[]POW_MIN,[]POS_MAX)
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
-            1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
+            1, MODE,0, TORQUE, CENTER, STIFF, 0, 1000,5 ,  # плечо левая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(0 / 0.087 - 2088), int(11 / 0.087 - 2088),  # кисть
             3, MODE,-100, TORQUE, CENTER, STIFF, 0, 2600, 2500,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
@@ -237,7 +239,7 @@ if __name__ == '__main__':
 
 
         q1, q2, q3, q4, q5 = np.deg2rad(L_Shoulder/2 + 45), np.deg2rad(L_Shoulder_S), np.deg2rad(L_ElbowR_R+15),np.deg2rad(L_Elbow - 45) - pi/2, np.deg2rad(L_WristR)
-
+        print(struct.unpack('h', data[2:4])[0])
         T01 = np.eye(4)@Ry(math.pi)
         T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
         T23 = Ry(q2) #@ Tz(a2)  # Joint 2 to 3
@@ -283,15 +285,15 @@ if __name__ == '__main__':
         if(q4 < -1.56):
             q4 = -1.56
 
-
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_address = ('10.100.20.22', 10000)
-        sock.connect(server_address)
-        print(q4)
-        values = (q3, q1, q4, q5)
-        packer = struct.Struct('f f f f')
-        packed_data = packer.pack(*values)
-        try:
-            sock.sendall(packed_data)
-        finally:
-            sock.close()
+        #
+        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # server_address = ('10.100.20.22', 10000)
+        # sock.connect(server_address)
+        # print(q4)
+        # values = (q3, q1, q4, q5)
+        # packer = struct.Struct('f f f f')
+        # packed_data = packer.pack(*values)
+        # try:
+        #     sock.sendall(packed_data)
+        # finally:
+        #     sock.close()

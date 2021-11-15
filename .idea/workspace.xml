@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e63984ea-4310-4320-b15a-aeac89f12da3" name="Default Changelist" comment="m">
-      <change afterPath="$PROJECT_DIR$/comunication.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/main4.py" afterDir="false" />
+    <list default="true" id="e63984ea-4310-4320-b15a-aeac89f12da3" name="Default Changelist" comment="Comunication class for simplify process set and get data prom pack">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/comunication.py" beforeDir="false" afterPath="$PROJECT_DIR$/comunication.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/main3.py" beforeDir="false" afterPath="$PROJECT_DIR$/main3.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/main4.py" beforeDir="false" afterPath="$PROJECT_DIR$/main4.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -58,7 +58,7 @@
       <recent name="D:\Users\damin\PycharmProjects\ARM_ex-master" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.main3">
+  <component name="RunManager" selected="Python.main4">
     <configuration name="Force_Test" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -185,6 +185,27 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <configuration name="main4" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="pythonProject" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="C:\Users\damin\AppData\Local\Programs\Python\Python36\python.exe" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main4.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
     <configuration name="plot34" type="PythonConfigurationType" factoryName="Python">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -213,9 +234,11 @@
       <item itemvalue="Python.main2" />
       <item itemvalue="Python.main" />
       <item itemvalue="Python.main3" />
+      <item itemvalue="Python.main4" />
     </list>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.main4" />
         <item itemvalue="Python.main3" />
         <item itemvalue="Python.main2" />
         <item itemvalue="Python.main" />
@@ -326,7 +349,14 @@
       <option name="project" value="LOCAL" />
       <updated>1636913246037</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="Comunication class for simplify process set and get data prom pack">
+      <created>1636920869509</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1636920869509</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -364,6 +394,7 @@
     <MESSAGE value="Clear" />
     <MESSAGE value="Main2 try implement PID" />
     <MESSAGE value="m" />
-    <option name="LAST_COMMIT_MESSAGE" value="m" />
+    <MESSAGE value="Comunication class for simplify process set and get data prom pack" />
+    <option name="LAST_COMMIT_MESSAGE" value="Comunication class for simplify process set and get data prom pack" />
   </component>
 </project>
