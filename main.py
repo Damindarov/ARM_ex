@@ -244,6 +244,8 @@ if __name__ == '__main__':
         L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
 
+        print('Elbow value',L_Elbow)
+
         L_Shoulder_S1 = 0
         L_ElbowR_R1 = 0
         if np.sign(L_Shoulder_S) == -1:
@@ -277,13 +279,22 @@ if __name__ == '__main__':
 
         q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S1), math.radians(L_ElbowR_R1),math.radians(L_Elbow), math.radians(L_WristR)
 
-        T01 = np.eye(4)@Ry(math.pi)
-        T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
-        T23 = Ry(q2) #@ Tz(a2)  # Joint 2 to 3
-        T34 = Rz(q3) @ Tz(-a3)  # Joint 3 to 4
-        T45 = Rx(q4) @ Tz(-a4)  # Joint 4 to 5
+        # T01 = np.eye(4)@Ry(math.pi)
+        # T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
+        # T23 = Ry(q2) #@ Tz(a2)  # Joint 2 to 3
+        # T34 = Rz(q3) @ Tz(-a3)  # Joint 3 to 4
+        # T45 = Rx(q4) @ Tz(-a4)  # Joint 4 to 5
+        #
+        # T56 = Rz(q5) #@ Tz(a4)  # Joint 5 to 6
 
-        T56 = Rz(q5) #@ Tz(a4)  # Joint 5 to 6
+        T01 = np.eye(4)
+        T12 = Rx(0) @ Tx(-a1)  # Joint 1 to 2
+        T23 = Tz(-a2)  # np.eye(4)# Joint 2 to 3
+        T34 = Rz(0) @ Rx(0)  # Joint 3 to 4
+        T45 = Tz(-a3)  # Rx(q3)                    # Joint 4 to 5
+        T56 = Tz(-a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
+        T67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7
+        T7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E
 
         T02 = T01 @ T12
         T03 = T01 @ T12 @ T23
