@@ -3,7 +3,6 @@ import struct
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 server_address = ('192.168.0.116', 10000)
 
-print(q4)
 # values = (q3, q1, q4, q5, q6)
 values = (15, 15, 15, 15, 15)
 
