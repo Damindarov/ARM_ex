@@ -10,9 +10,9 @@ values = (15, 15, 15, 15, 15)
 
 packer = struct.Struct('f f f f f')
 packed_data = packer.pack(*values)
-while(True):
+# while(True):
     # try:
-    sock.sendall(packed_data)
+sock.sendall(packed_data)
         # data1 = sock.recv(1024)
         # print(packer.unpack(data1))
     # finally:
