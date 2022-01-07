@@ -10,109 +10,13 @@ from struct import *
 import time
 import numpy as np
 import sympy as sym
-from matrix import *
 from numpy.linalg import linalg
 
-sym.init_printing()
 import math
-import plotly.io as pio
-import plotly.graph_objects as go
-# from roboticstoolbox.backends.Swift import Swift
-# from roboticstoolbox import ETS as ET
-# import roboticstoolbox as rtb
-# Length of Links in meters
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
 
 pi = np.pi
 pi_sym = sym.pi
-
-# e = ET.ry() * ET.ty(a1) * ET.ry() * ET.tz(a2) * ET.rz() * ET.tz(a3) * ET.ry() * ET.tz(a4) * ET.rz() * ET.tz(a4)
-# print(e)
-# robot = rtb.ERobot(e)
-# print(robot)
-# P = np.sin(np.linspace(-2.5,2.5))
-
-def plot_robots(rob_cnfs, traj_x, traj_y, traj_z):
-    """
-    rob_cnfs: list of robot configurations and plots each configuration
-    """
-
-    fig = go.Figure()
-
-    # fig.add_scatter3d(
-    #       x=traj_x,
-    #       y=traj_y,
-    #       z=traj_z,
-    #       hoverinfo='none',
-    #       marker=dict( size=0.1 ),
-    #       name = "desired trajectory"
-    # )
-
-    for i, q_params in enumerate(rob_cnfs):
-        q1, q2, q3, q4, q5 = q_params
-
-
-        T01 = np.eye(4)
-        T12 = Ry(q1) @ Ty(a1)  # Joint 1 to 2
-        T23 = Rx(q2) @ Tz(a2)  # Joint 2 to 3
-        T34 = Rz(q3) @ Tz(a3)  # Joint 3 to 4
-        T45 = Ry(q4) @ Tz(a4)  # Joint 4 to 5
-        T56 = Rz(q5) @ Tz(a4)  # Joint 5 to 6
-
-        T02 = T01 @ T12
-        T03 = T01 @ T12 @ T23
-        T04 = T01 @ T12 @ T23 @ T34
-        T05 = T01 @ T12 @ T23 @ T34 @ T45
-        T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56
-        # T07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67
-        # T0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E
-
-        x_pos = [T01[0, -1], T02[0, -1], T03[0, -1], T04[0, -1], T05[0, -1], T06[0, -1]]
-        y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
-        z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
-
-        # Setting opacity
-        if (i != 0 and i != len(rob_cnfs) - 1):
-            opc = 0.3
-        else:
-            opc = 1
-
-        wd = 10  # Width
-
-        fig.add_scatter3d(
-            x=np.round(x_pos, 2),
-            y=np.round(y_pos, 2),
-            z=z_pos,
-            line=dict(color='darkblue', width=wd),
-            hoverinfo="none",  # hoverinfo="text",
-            hovertext=[f"joint {idx}: {q}"
-                       for idx, q in
-                       enumerate(np.round(np.rad2deg([0, q1, q2, q3, q4, q5]), 0))],
-            marker=dict(
-                size=wd / 2,
-                color=["black", "orange", "yellow", "pink", "blue", "goldenrod", "green", "red"],
-            ),
-            opacity=opc,
-            showlegend=False,
-            name=f"conf {i}"
-        )
-
-    fig.layout = dict(
-        width=1000,
-        height=700,
-        scene=dict(
-            camera=dict(eye={'x': -1.25, 'y': -1.25, 'z': 2}),
-            aspectratio={'x': 1.25, 'y': 1.25, 'z': 1},
-            # xaxis = dict( nticks=8, range=[np.min(traj_x)-0.5, np.max(traj_x)+0.5] ),
-            # yaxis = dict( nticks=8, range=[np.min(traj_y)-0.5, np.max(traj_y)+0.5] ),
-            # zaxis = dict( nticks=8, range=[-0.05, np.max(traj_z)+0.4] ),
-            xaxis_title='Robot x-axis',
-            yaxis_title='Robot y-axis',
-            zaxis_title='Robot z-axis'),
-        title=f"Robot plot in different configurations",
-        colorscale=dict(diverging="thermal")
-    )
-    pio.show(fig)
 
 
 def send(data, port=10003, addr='192.169.2.15'):
@@ -167,32 +71,6 @@ if __name__ == '__main__':
     DUMP = 0
     POSMIN = 0
     POSMAX = 0
-
-    # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    # sock.bind((UDP_IP, UDP_PORT))
-    # frame = []
-    # pa = pack(
-    #     'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
-    #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
-    #     2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(0 / 0.087 - 2088), int(11 / 0.087 - 2088),  # кисть
-    #     3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
-    #     4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
-    #     5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
-    #     6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(1934 + 0 / -0.085), int(1934 + 60 / -0.085),  # средний
-    #     7, MODE, 456, 3000, CENTER, STIFF, 0, int(3000), int(3000),
-    #     # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный
-    #     8, MODE, ANGLE, 3000, CENTER, STIFF, 0, 3000, 3200,  # мизинец
-    #
-    #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # правая
-    #     2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     7, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-    #     8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 1616 + 550, 1616 + 700)
-    # send(pa)
-
     while (True):
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
