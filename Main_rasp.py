@@ -107,17 +107,18 @@ if __name__ == '__main__':
         #
         #
 
-        print('Exoskeleton_data got')
+        # print('Exoskeleton_data got')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('192.168.0.116', 10000)
         sock.connect(server_address)
 
         # values = (q3, q1, q4, q5)
         values = (10, 15, 20, 25)
-
         packer = struct.Struct('f f f f')
         packed_data = packer.pack(*values)
         try:
             sock.sendall(packed_data)
+            data = sock.recv(1024)
+            print(data)
         finally:
             sock.close()
