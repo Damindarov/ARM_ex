@@ -236,169 +236,19 @@ if __name__ == '__main__':
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
 
-        q1, q2, q3, q4, q5 = math.radians(L_ShoulderF), math.radians(L_Shoulder_S1), math.radians(L_ElbowR_R1),math.radians(L_Elbow), math.radians(L_WristR)
-
-        # T01 = np.eye(4)@Ry(math.pi)
-        # T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
-        # T23 = Ry(q2) #@ Tz(a2)  # Joint 2 to 3
-        # T34 = Rz(q3) @ Tz(-a3)  # Joint 3 to 4
-        # T45 = Rx(q4) @ Tz(-a4)  # Joint 4 to 5
-        #
-        # T56 = Rz(q5) #@ Tz(a4)  # Joint 5 to 6
-
-        T01 = np.eye(4)
-        T12 = Rx(0) @ Tx(-a1)  # Joint 1 to 2
-        T23 = Tz(-a2)  # np.eye(4)# Joint 2 to 3
-        T34 = Rz(0) @ Rx(0)  # Joint 3 to 4
-        T45 = Tz(-a3)  # Rx(q3)                    # Joint 4 to 5
-        T56 = Tz(-a4)  # Rz(q5) @ Tz(a3)           # Joint 5 to 6
-        T67 = np.eye(4)  # Rx(q6)                    # Joint 6 to 7
-        T7E = np.eye(4)  # Rz(q7) @ Tz(a4)           # Joint 7 to E
-
-        T02 = T01 @ T12
-        T03 = T01 @ T12 @ T23
-        T04 = T01 @ T12 @ T23 @ T34
-        T05 = T01 @ T12 @ T23 @ T34 @ T45
-        T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56
-        # T07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67
-        # T0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E
-
-        x_pos = [T01[0, -1], T02[0, -1], T03[0, -1], T04[0, -1], T05[0, -1], T06[0, -1]]
-        y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
-        z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
-        #print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
+        q1, q2, q3, q4, q5, q6, q7 = math.radians(L_ShoulderF), math.radians(L_Shoulder_S), math.radians(L_ElbowR),math.radians(L_Elbow), math.radians(L_Elbow), math.radians(L_WristR), math.radians(L_WristS), math.radians(L_WristF)
         sock.close()
-        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # server_address = ('10.100.20.147', 10000)
-        # sock.connect(server_address)
 
 
-        # Connect the socket to the port where the server is listening
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('192.168.0.116', 10000)
+        sock.connect(server_address)
 
-        R_ = 0.8
-        r_ = 0.4
-        xcord, ycord, zcord = T06[0][3], T06[1][3], T06[2][3]
-        # if xcord**2 + ycord**2 + zcord**2 < R_**2:
-        #     if xcord**2 + ycord**2 + zcord**2 > r_**2:
-        #         if zcord >= 0.1:
-        #             pass
-        #         else:
-        #             zcord = 0.1
-        #         if abs(xcord) > 0.231:
-        #             pass
-        #         else:
-        #             xcord = np.sign(xcord) * 0.431
-        #         if abs(ycord) > 0.231:
-        #             pass
-        #         else:
-        #             ycord = np.sign(ycord) * 0.431
-        if maxq1 < q1:
-            maxq1 = q1
-        if minq1 > q1:
-            minq1 = q1
+        values = (q3, q1, q4, q5)
+        packer = struct.Struct('f f f f')
+        packed_data = packer.pack(*values)
 
-        if maxq3 < q3:
-            maxq3 = q3
-        if minq3 > q3:
-            minq3 = q3
-
-        if maxq4 < q4:
-            maxq4 = q4
-        if minq4 > q4:
-            minq4 = q4
-        if(time.time() > timer):
-            timer = time.time()+0.5
-            # print('x = ', round(-xcord,2), 'y = ', round(ycord,2), 'z = ',round(0.9 - zcord,2))
-
-            # print('q1', round(q1, 2), 'q2', round(q2, 2), 'q3', round(q3, 2), 'q4', round(q4, 2), 'q5', round(q5, 2))
-            # print('q1', round(q1, 2),  'q3', round(q3, 2), 'q4', round(q4, 2))
-
-            # print('maxq1', round(maxq1,3), 'minq1', round(minq1,3),
-            #       'maxq3', round(maxq3,3), 'minq3', round(minq3,3),
-            #       'maxq4', round(maxq4,3), 'minq4', round(minq4,3))
-            # values = (-xcord,-ycord, 0.9 - zcord)
-            '''maxq1 2.703 minq1 -0.534 maxq3 0.904 minq3 -1.171 maxq4 0.023 minq4 -1.99'''
-
-
-        # values = (q1, q3, q4)
-        # packer = struct.Struct('f f f')
-        # packed_data = packer.pack(*values)
-        #
-        # try:
-        #     sock.sendall(packed_data)
-        # finally:
-        #     sock.close()
-        #
-
-
-    # else:
-    #     print('mistake pose')
-        # # print((T06)[2][3])
-        # # robot.plot([math.radians(q1), math.radians(q2), math.radians(q3), math.radians(q4), 0], backend="swift",limits=[-0.5,0.5,-0.5,0.5,-0.5,0.5])
-        # # time.sleep(0.2)
-        #
-        #
-        #
-        #
-        #
-        #
-        #
-        # # print('L_Thumb', L_Thumb)
-        # # print('L_Shoulder ', L_Shoulder, 'L_Shoulder_S ', L_Shoulder_S, 'L_Elbow ', L_Elbow, 'L_Elbow_R', L_ElbowR_R , 'L_Wirst ', L_Wrist, 'L_Index ', L_Index, 'L_Little ',
-        # #       L_Little, 'L_Middle ', L_Middle, 'L_Ring ', L_Ring, 'L_Trhumb ', L_Thumb)
-        #
-        # R_Shoulder = struct.unpack('h', data[130:132])[0]  # problem with cable, disable
-        # R_Elbow = (0 - struct.unpack('h', data[162:164])[0])
-        # R_Wrist = (0 - struct.unpack('h', data[146:148])[0])
-        # R_Index = (2692 - struct.unpack('h', data[194:196])[0])
-        # R_Little = (1616 - struct.unpack('h', data[242:244])[0])
-        # R_Middle = (1169 - struct.unpack('h', data[210:212])[0])
-        # R_Ring = (2130 - struct.unpack('h', data[226:228])[0])
-        # R_Thumb = -(2154 - struct.unpack('h', data[178:180])[0])
-        #
-        # # print(R_Thumb - L_Thumb)
-        # d_Wrist = R_Wrist - L_WristS
-        # d_Thumb = R_Thumb - L_Thumb
-        # d_Little = R_Little - L_Little
-        # d_Ring = R_Ring - L_Ring
-        # d_Index = R_Index - L_Index
-        # d_Middle = R_Middle - L_Middle
-        # d_Elbow = R_Elbow - L_Elbow
-        #
-        # d_Wrist_Value = int((R_Wrist - L_WristS) / 0.085)
-        # d_Thumb_value = int((R_Thumb - L_Thumb) / 0.085)
-        # d_Little_value = int((R_Little - L_Little) / 0.085)
-        # d_Ring_value = int((R_Ring - L_Ring) / 0.085)
-        # d_Index_value = int((R_Index - L_Index) / 0.085)
-        # d_Middle_value = int((R_Middle - L_Middle) / 0.085)
-        # d_Elbow_value = int((R_Elbow - L_Elbow))
-        #
-        # # print(R_Elbow,L_Elbow,d_Elbow_value,d_Elbow)
-        # # print(-np.sign(d_Middle)*ANGLE,d_Middle_value)
-        # error = d_Little_value
-        # P = Kp * error
-        # I = I + Ki * error * (time.time() - time_p)
-        # D = Kd * (error - error_p)
-        # error_p = error
-        # d_Little_pid = int(P + I + D)
-        # time_p = time.time()
-        # # pa = pack(
-        # #     'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
-        # #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо
-        # #     2, MODE, int(-np.sign(d_Wrist)*(-150)), d_Wrist_Value + 0, CENTER, STIFF, 0, d_Wrist_Value+0, 0,  # кисть
-        # #     3, MODE, int(np.sign(d_Elbow)*(400)),d_Elbow_value+0, CENTER, STIFF, 0, d_Elbow_value+0, 0,  # локоть что с ним???
-        # #     4, MODE, int(-np.sign(d_Thumb)*(-150)), d_Thumb_value+490, CENTER, STIFF, 0, d_Thumb_value+490, 0,  # большой
-        # #     5, MODE, int(-np.sign(d_Index)*(-400)), d_Index_value+2029, CENTER, STIFF, 0, d_Index_value+2029,0, # указательный
-        # #     6, MODE, int(-np.sign(d_Middle)*(-200)), d_Middle_value+1904, CENTER, STIFF, 0, d_Middle_value+1904,0,  # средний
-        # #     7, MODE, int(-np.sign(d_Ring)*(-170)), d_Ring_value+2478, CENTER, STIFF, 0, d_Ring_value+2478,0,# int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный
-        # #     8, MODE, int(-np.sign(d_Little)*(-200)), d_Little_pid+2276, CENTER, STIFF, 0, d_Little_pid+2276, 0,#мизинец
-        # #
-        # #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     7, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-        # #     8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX)
-        # send(pa)
+        try:
+            sock.sendall(packed_data)
+        finally:
+            sock.close()
