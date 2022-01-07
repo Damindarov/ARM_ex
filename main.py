@@ -167,13 +167,7 @@ if __name__ == '__main__':
     DUMP = 0
     POSMIN = 0
     POSMAX = 0
-    offsets_left = np.array([0, 2150, 2088, 0, 0, 2630, 2230, 2029, 3320, 1934, 2478, 0, 490])
-    offsets_right = np.array([0, 2142, 2018, 0, 0, 2040, 2160, 2692, 1616, 1169, 2130, 0, 2155])
-    scale_left = np.array([0.085, -0.08789063, -0.8789063, 0.02, -0.085, -0.8789063, 0.8789063, 0.085, -0.085,
-                           -0.085, 0.085, 1, 0.085])
-    scale_right = np.array([-0.085, -0.08789063, -0.08789063, -0.02, -0.085, -0.08789063, -0.08789063, 0.085, -0.085,
-                            -0.085, 0.085, 1, -0.085])
-    print(len(scale_left), len(scale_right))
+
     # sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     # sock.bind((UDP_IP, UDP_PORT))
     # frame = []
@@ -199,16 +193,6 @@ if __name__ == '__main__':
     #     8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 1616 + 550, 1616 + 700)
     # send(pa)
 
-    Kp = 4.8
-    Ki = 0
-
-    Kd = 5
-    I = 0
-    error_p = 0
-    time_p = time.time()
-    fig = go.Figure()
-    timer = 0
-    minq1,maxq1,minq3,maxq3,minq4,maxq4 = 0,0,0,0,0,0
     while (True):
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -237,38 +221,13 @@ if __name__ == '__main__':
         send(pa)
         data, addr = sock.recvfrom(310)
 
-        L_Shoulder = struct.unpack('h', data[2:4])[0]*0.085#incorrect?
+        L_ShoulderF = struct.unpack('h', data[2:4])[0]*0.085#incorrect?
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150)*0.08789063 #correct
-        L_ElbowR_R = (struct.unpack('h', data[268:270])[0] - 2088)*0.08789063 #correct
+        L_ElbowR = (struct.unpack('h', data[268:270])[0] - 2088)*0.08789063 #correct
         L_Elbow = struct.unpack('h', data[34:36])[0]*-0.02 #correct
         L_WristR = (0 - struct.unpack('h', data[18:20])[0])*0.085 #correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630)*0.08789063 #incorrect?
-
-        print('Elbow value',L_Elbow)
-
-        L_Shoulder_S1 = 0
-        L_ElbowR_R1 = 0
-        if np.sign(L_Shoulder_S) == -1:
-            L_Shoulder_S1 = -(185.89 - abs(L_Shoulder_S))
-        if np.sign(L_Shoulder_S) == 1:
-            L_Shoulder_S1 = 170.95 - abs(L_Shoulder_S)
-        if L_Shoulder_S == 170.95:
-            L_Shoulder_S1 = 0
-
-        if np.sign(L_ElbowR_R) == -1:
-            L_ElbowR_R1 = -(183.52 - abs(L_ElbowR_R))
-        if np.sign(L_ElbowR_R) == 1:
-            L_ElbowR_R1 = 176.4 - abs(L_ElbowR_R)
-
-        # if (time.time() > timer):
-        #     timer = time.time() + 0.5
-        #     # print('x = ', round(-xcord, 2), 'y = ', round(ycord, 2), 'z = ', round(0.9 - zcord, 2))
-        #     print('L_Shoulder ',round(L_Shoulder,2),
-        #           'L_Shoulder_S ',round(L_Shoulder_S,2),
-        #           'L_ElbowR_R ',round(L_ElbowR_R,2),
-        #           'L_Elbow ',round(L_Elbow,2),
-        #           'L_WristR ',round(L_WristR,2),
-        #           'L_WristS ',round(L_WristS,2))
+        L_WristF = ((0 - struct.unpack('h', data[264:266])[0]) - 2230)*0.08789063
         #this block for fingers
 
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0])*-0.085 #correct
@@ -277,7 +236,7 @@ if __name__ == '__main__':
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0])*0.085 #correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0])*0.085
 
-        q1, q2, q3, q4, q5 = math.radians(L_Shoulder), math.radians(L_Shoulder_S1), math.radians(L_ElbowR_R1),math.radians(L_Elbow), math.radians(L_WristR)
+        q1, q2, q3, q4, q5 = math.radians(L_ShoulderF), math.radians(L_Shoulder_S1), math.radians(L_ElbowR_R1),math.radians(L_Elbow), math.radians(L_WristR)
 
         # T01 = np.eye(4)@Ry(math.pi)
         # T12 = Rx(q1) @ Tx(a1)  # Joint 1 to 2
