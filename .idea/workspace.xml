@@ -1,15 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="e63984ea-4310-4320-b15a-aeac89f12da3" name="Default Changelist" comment="Comunication class for simplify process set and get data prom pack">
-      <change afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_connetion.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/Test_matrix.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/comunicatior.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/subs.py" afterDir="false" />
+    <list default="true" id="e63984ea-4310-4320-b15a-aeac89f12da3" name="Default Changelist" comment="Fully functioning hands">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main4.py" beforeDir="false" afterPath="$PROJECT_DIR$/main4.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -367,7 +361,14 @@
       <option name="project" value="LOCAL" />
       <updated>1637000904007</updated>
     </task>
-    <option name="localTasksCounter" value="16" />
+    <task id="LOCAL-00016" summary="Fully functioning hands">
+      <created>1643223727052</created>
+      <option name="number" value="00016" />
+      <option name="presentableId" value="LOCAL-00016" />
+      <option name="project" value="LOCAL" />
+      <updated>1643223727052</updated>
+    </task>
+    <option name="localTasksCounter" value="17" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -406,6 +407,7 @@
     <MESSAGE value="Main2 try implement PID" />
     <MESSAGE value="m" />
     <MESSAGE value="Comunication class for simplify process set and get data prom pack" />
-    <option name="LAST_COMMIT_MESSAGE" value="Comunication class for simplify process set and get data prom pack" />
+    <MESSAGE value="Fully functioning hands" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fully functioning hands" />
   </component>
 </project>
