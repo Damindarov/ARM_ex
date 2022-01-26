@@ -7,6 +7,7 @@ import struct
 from struct import *
 import time
 import math
+import numpy as np
 
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
 
@@ -63,6 +64,9 @@ if __name__ == '__main__':
     DUMP = 0
     POSMIN = 0
     POSMAX = 0
+    Us = 0
+    Val_mins = 0
+    Val_maxs = 0
     while (True):
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -70,8 +74,8 @@ if __name__ == '__main__':
         frame = []
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
-            1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо левая
-            2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(0 / 0.087 - 2088), int(11 / 0.087 - 2088),  # кисть
+            1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # плечо левая
+            2, MODE, int(Us), TORQUE, CENTER, STIFF, 0, int(Val_mins), int(Val_maxs),  # кисть
             3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
@@ -80,7 +84,7 @@ if __name__ == '__main__':
             # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный()
             8, MODE, ANGLE, 3000, CENTER, STIFF, 0, 3000, 3200,  # мизинец()
 
-            1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # правая
+            1, MODE, 200, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # правая
             2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
@@ -118,9 +122,19 @@ if __name__ == '__main__':
             L_ElbowR), math.radians(L_Elbow), math.radians(L_WristR), math.radians(L_WristS), math.radians(L_WristF)
         sock.close()
         q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR), math.radians(R_Elbow), math.radians(R_WristR), math.radians(R_WristS), math.radians(R_WristF)
+        delta_W = (q12 - q5)
+        Kp_s = 150
+        Val_mins = -R_WristR / 0.085
+        Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
+        if q12 > q5:
+            Us = -Kp_s * delta_W * np.sign(delta_W)
+        else:
+            Us = Kp_s * delta_W * np.sign(delta_W)
 
-        print(q14)
-        time.sleep(0.5)
+
+        print(round(q5,2), round(q12,2), round(q5 - q12,2), int(Us), int(Val_mins), int(Val_maxs))
+
+        time.sleep(0.01)
         # q7 = q7 + 6.57
         # print(q3, q1, q4, q5, q7)
         # print('Exoskeleton_data got')
