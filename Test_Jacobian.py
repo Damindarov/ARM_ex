@@ -1,5 +1,4 @@
 import time
-
 from std_msgs.msg import Float32MultiArray
 import numpy as np
 import sympy as sym

@@ -1,25 +1,238 @@
+# This is a sample Python script.
+
+# Press Shift+F10 to execute it or replace it with your code.
+# Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
+
+# UDP multicast examples, Hugo Vincent, 2005-05-14.
 import socket
 import struct
 from struct import *
+import time
 import numpy as np
 import sympy as sym
+from numpy.linalg import linalg
+
 sym.init_printing()
 import math
 import csv
 import plotly.io as pio
 import plotly.graph_objects as go
 import time
-from matrix import *
+# from roboticstoolbox.backends.Swift import Swift
+# from roboticstoolbox import ETS as ET
+# import roboticstoolbox as rtb
+# Length of Links in meters
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
 
 pi = np.pi
 pi_sym = sym.pi
 
+# e = ET.ry() * ET.ty(a1) * ET.ry() * ET.tz(a2) * ET.rz() * ET.tz(a3) * ET.ry() * ET.tz(a4) * ET.rz() * ET.tz(a4)
+# print(e)
+# robot = rtb.ERobot(e)
+# print(robot)
+# P = np.sin(np.linspace(-2.5,2.5))
 filename = 'point_cloud.csv'
 
+def Rx(q):
+  T = np.array([[1,         0,          0, 0],
+                [0, np.cos(q), -np.sin(q), 0],
+                [0, np.sin(q),  np.cos(q), 0],
+                [0,         0,          0, 1]], dtype=float)
+  return T
+
+def Ry(q):
+  T = np.array([[ np.cos(q), 0, np.sin(q), 0],
+                [         0, 1,         0, 0],
+                [-np.sin(q), 0, np.cos(q), 0],
+                [         0, 0,         0, 1]], dtype=float)
+  return T
+
+def Rz(q):
+  T = np.array([[np.cos(q), -np.sin(q), 0, 0],
+                [np.sin(q),  np.cos(q), 0, 0],
+                [        0,          0, 1, 0],
+                [        0,          0, 0, 1]], dtype=float)
+  return T
+
+
+def Rx_sym(q):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, sym.cos(q), -sym.sin(q), 0],
+        [0, sym.sin(q), sym.cos(q), 0],
+        [0, 0, 0, 1]]
+  )
+
+def Ry_sym(q):
+  return sym.Matrix(
+      [[sym.cos(q), 0, sym.sin(q), 0],
+        [0, 1, 0, 0],
+        [-sym.sin(q), 0, sym.cos(q), 0],
+        [0, 0, 0, 1]]
+  )
+
+def Rz_sym(q):
+  return sym.Matrix(
+      [[sym.cos(q), -sym.sin(q), 0, 0],
+        [sym.sin(q), sym.cos(q), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def d_Rx(q):
+  T = np.array([[0,          0,          0, 0],
+                [0, -np.sin(q), -np.cos(q), 0],
+                [0,  np.cos(q), -np.sin(q), 0],
+                [0,          0,          0, 0]], dtype=float)
+  return T
+
+def d_Ry(q):
+  T = np.array([[-np.sin(q), 0,  np.cos(q), 0],
+                [         0, 0,          0, 0],
+                [-np.cos(q), 0, -np.sin(q), 0],
+                [         0, 0,          0, 0]], dtype=float)
+  return T
+
+def d_Rz(q):
+  T = np.array([[-np.sin(q), -np.cos(q), 0, 0],
+                [ np.cos(q), -np.sin(q), 0, 0],
+                [         0,          0, 0, 0],
+                [         0,          0, 0, 0]], dtype=float)
+  return T
+
+
+def d_Rx_sym(q):
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, -sym.sin(q), -sym.cos(q), 0],
+        [0, sym.cos(q), -sym.sin(q), 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Ry_sym(q):
+  return sym.Matrix(
+      [[-sym.sin(q), 0, sym.cos(q), 0],
+        [0, 0, 0, 0],
+        [-sym.cos(q), 0, -sym.sin(q), 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Rz_sym(q):
+  return sym.Matrix(
+      [[-sym.sin(q), -sym.cos(q), 0, 0],
+        [sym.cos(q), -sym.sin(q), 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]])
+
+def Tx(x):
+  T = np.array([[1, 0, 0, x],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Ty(y):
+  T = np.array([[1, 0, 0, 0],
+                [0, 1, 0, y],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Tz(z):
+  T = np.array([[1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, z],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Tx_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, s],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def Ty_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, 1, 0, s],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def Tz_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, s],
+        [0, 0, 0, 1]]
+  )
+
+def d_Tx(x):
+  T = np.array([[0, 0, 0, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+def d_Ty(y):
+  T = np.array([[0, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+def d_Tz(z):
+  T = np.array([[0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+
+def d_Tx_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Ty_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Tz_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 0]]
+  )
+
+
+
 def plot_robots(rob_cnfs, traj_x, traj_y, traj_z):
+    """
+    rob_cnfs: list of robot configurations and plots each configuration
+    """
 
     fig = go.Figure()
+
+    # fig.add_scatter3d(
+    #       x=traj_x,
+    #       y=traj_y,
+    #       z=traj_z,
+    #       hoverinfo='none',
+    #       marker=dict( size=0.1 ),
+    #       name = "desired trajectory"
+    # )
 
     for i, q_params in enumerate(rob_cnfs):
         q1, q2, q3, q4, q5 = q_params
@@ -37,6 +250,8 @@ def plot_robots(rob_cnfs, traj_x, traj_y, traj_z):
         T04 = T01 @ T12 @ T23 @ T34
         T05 = T01 @ T12 @ T23 @ T34 @ T45
         T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56
+        # T07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67
+        # T0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E
 
         x_pos = [T01[0, -1], T02[0, -1], T03[0, -1], T04[0, -1], T05[0, -1], T06[0, -1]]
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
@@ -179,7 +394,7 @@ if __name__ == '__main__':
 
     fig = go.Figure()
 
-    fields = ['q1', 'q2', 'q3', 'q4', 'q5']
+    fields = ['X', 'Y', 'Z']
     rows = []
     print(time.time())
     start = time.time()
@@ -240,15 +455,103 @@ if __name__ == '__main__':
         T04 = T01 @ T12 @ T23 @ T34
         T05 = T01 @ T12 @ T23 @ T34 @ T45
         T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56
+        # T07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67
+        # T0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E
 
         x_pos = [T01[0, -1], T02[0, -1], T03[0, -1], T04[0, -1], T05[0, -1], T06[0, -1]]
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
         z_pos = [T01[2, -1], T02[2, -1], T03[2, -1], T04[2, -1], T05[2, -1], T06[2, -1]]
         print('x = ', T06[0][3] ,'y = ', T06[1][3], 'z = ', T06[2][3])
-        new_row = [q1, q2, q3, q4, q5]
+        new_row = [T06[0][3], T06[1][3], T06[2][3]]
         rows.append(new_row)
         sock.close()
         time.sleep(0.01)
+
+
+
+        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        #
+        # # Connect the socket to the port where the server is listening
+        # server_address = ('192.168.213.229', 10000)
+        # sock.connect(server_address)
+        # values = (T06[0][3],T06[1][3],  T06[2][3])
+        # packer = struct.Struct('f f f')
+        # packed_data = packer.pack(*values)
+        #
+        # try:
+        #     sock.sendall(packed_data)
+        # finally:
+        #     sock.close()
+
+        # # print((T06)[2][3])
+        # # robot.plot([math.radians(q1), math.radians(q2), math.radians(q3), math.radians(q4), 0], backend="swift",limits=[-0.5,0.5,-0.5,0.5,-0.5,0.5])
+        # # time.sleep(0.2)
+        #
+        #
+        #
+        #
+        #
+        #
+        #
+        # # print('L_Thumb', L_Thumb)
+        # # print('L_Shoulder ', L_Shoulder, 'L_Shoulder_S ', L_Shoulder_S, 'L_Elbow ', L_Elbow, 'L_Elbow_R', L_ElbowR_R , 'L_Wirst ', L_Wrist, 'L_Index ', L_Index, 'L_Little ',
+        # #       L_Little, 'L_Middle ', L_Middle, 'L_Ring ', L_Ring, 'L_Trhumb ', L_Thumb)
+        #
+        # R_Shoulder = struct.unpack('h', data[130:132])[0]  # problem with cable, disable
+        # R_Elbow = (0 - struct.unpack('h', data[162:164])[0])
+        # R_Wrist = (0 - struct.unpack('h', data[146:148])[0])
+        # R_Index = (2692 - struct.unpack('h', data[194:196])[0])
+        # R_Little = (1616 - struct.unpack('h', data[242:244])[0])
+        # R_Middle = (1169 - struct.unpack('h', data[210:212])[0])
+        # R_Ring = (2130 - struct.unpack('h', data[226:228])[0])
+        # R_Thumb = -(2154 - struct.unpack('h', data[178:180])[0])
+        #
+        # # print(R_Thumb - L_Thumb)
+        # d_Wrist = R_Wrist - L_WristS
+        # d_Thumb = R_Thumb - L_Thumb
+        # d_Little = R_Little - L_Little
+        # d_Ring = R_Ring - L_Ring
+        # d_Index = R_Index - L_Index
+        # d_Middle = R_Middle - L_Middle
+        # d_Elbow = R_Elbow - L_Elbow
+        #
+        # d_Wrist_Value = int((R_Wrist - L_WristS) / 0.085)
+        # d_Thumb_value = int((R_Thumb - L_Thumb) / 0.085)
+        # d_Little_value = int((R_Little - L_Little) / 0.085)
+        # d_Ring_value = int((R_Ring - L_Ring) / 0.085)
+        # d_Index_value = int((R_Index - L_Index) / 0.085)
+        # d_Middle_value = int((R_Middle - L_Middle) / 0.085)
+        # d_Elbow_value = int((R_Elbow - L_Elbow))
+        #
+        # # print(R_Elbow,L_Elbow,d_Elbow_value,d_Elbow)
+        # # print(-np.sign(d_Middle)*ANGLE,d_Middle_value)
+        # error = d_Little_value
+        # P = Kp * error
+        # I = I + Ki * error * (time.time() - time_p)
+        # D = Kd * (error - error_p)
+        # error_p = error
+        # d_Little_pid = int(P + I + D)
+        # time_p = time.time()
+        # # pa = pack(
+        # #     'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
+        # #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # плечо
+        # #     2, MODE, int(-np.sign(d_Wrist)*(-150)), d_Wrist_Value + 0, CENTER, STIFF, 0, d_Wrist_Value+0, 0,  # кисть
+        # #     3, MODE, int(np.sign(d_Elbow)*(400)),d_Elbow_value+0, CENTER, STIFF, 0, d_Elbow_value+0, 0,  # локоть что с ним???
+        # #     4, MODE, int(-np.sign(d_Thumb)*(-150)), d_Thumb_value+490, CENTER, STIFF, 0, d_Thumb_value+490, 0,  # большой
+        # #     5, MODE, int(-np.sign(d_Index)*(-400)), d_Index_value+2029, CENTER, STIFF, 0, d_Index_value+2029,0, # указательный
+        # #     6, MODE, int(-np.sign(d_Middle)*(-200)), d_Middle_value+1904, CENTER, STIFF, 0, d_Middle_value+1904,0,  # средний
+        # #     7, MODE, int(-np.sign(d_Ring)*(-170)), d_Ring_value+2478, CENTER, STIFF, 0, d_Ring_value+2478,0,# int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный
+        # #     8, MODE, int(-np.sign(d_Little)*(-200)), d_Little_pid+2276, CENTER, STIFF, 0, d_Little_pid+2276, 0,#мизинец
+        # #
+        # #     1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     7, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+        # #     8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX)
+        # send(pa)
     # writing to csv file
     with open(filename+'1', 'w') as csvfile:
     # creating a csv writer object

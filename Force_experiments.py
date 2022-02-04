@@ -18,7 +18,10 @@ import csv
 import plotly.io as pio
 import plotly.graph_objects as go
 import time
-from matrix import*
+# from roboticstoolbox.backends.Swift import Swift
+# from roboticstoolbox import ETS as ET
+# import roboticstoolbox as rtb
+# Length of Links in meters
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
 
 pi = np.pi
@@ -31,12 +34,205 @@ pi_sym = sym.pi
 # P = np.sin(np.linspace(-2.5,2.5))
 filename = 'point_cloud.csv'
 
+def Rx(q):
+  T = np.array([[1,         0,          0, 0],
+                [0, np.cos(q), -np.sin(q), 0],
+                [0, np.sin(q),  np.cos(q), 0],
+                [0,         0,          0, 1]], dtype=float)
+  return T
+
+def Ry(q):
+  T = np.array([[ np.cos(q), 0, np.sin(q), 0],
+                [         0, 1,         0, 0],
+                [-np.sin(q), 0, np.cos(q), 0],
+                [         0, 0,         0, 1]], dtype=float)
+  return T
+
+def Rz(q):
+  T = np.array([[np.cos(q), -np.sin(q), 0, 0],
+                [np.sin(q),  np.cos(q), 0, 0],
+                [        0,          0, 1, 0],
+                [        0,          0, 0, 1]], dtype=float)
+  return T
+
+
+def Rx_sym(q):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, sym.cos(q), -sym.sin(q), 0],
+        [0, sym.sin(q), sym.cos(q), 0],
+        [0, 0, 0, 1]]
+  )
+
+def Ry_sym(q):
+  return sym.Matrix(
+      [[sym.cos(q), 0, sym.sin(q), 0],
+        [0, 1, 0, 0],
+        [-sym.sin(q), 0, sym.cos(q), 0],
+        [0, 0, 0, 1]]
+  )
+
+def Rz_sym(q):
+  return sym.Matrix(
+      [[sym.cos(q), -sym.sin(q), 0, 0],
+        [sym.sin(q), sym.cos(q), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def d_Rx(q):
+  T = np.array([[0,          0,          0, 0],
+                [0, -np.sin(q), -np.cos(q), 0],
+                [0,  np.cos(q), -np.sin(q), 0],
+                [0,          0,          0, 0]], dtype=float)
+  return T
+
+def d_Ry(q):
+  T = np.array([[-np.sin(q), 0,  np.cos(q), 0],
+                [         0, 0,          0, 0],
+                [-np.cos(q), 0, -np.sin(q), 0],
+                [         0, 0,          0, 0]], dtype=float)
+  return T
+
+def d_Rz(q):
+  T = np.array([[-np.sin(q), -np.cos(q), 0, 0],
+                [ np.cos(q), -np.sin(q), 0, 0],
+                [         0,          0, 0, 0],
+                [         0,          0, 0, 0]], dtype=float)
+  return T
+
+
+def d_Rx_sym(q):
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, -sym.sin(q), -sym.cos(q), 0],
+        [0, sym.cos(q), -sym.sin(q), 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Ry_sym(q):
+  return sym.Matrix(
+      [[-sym.sin(q), 0, sym.cos(q), 0],
+        [0, 0, 0, 0],
+        [-sym.cos(q), 0, -sym.sin(q), 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Rz_sym(q):
+  return sym.Matrix(
+      [[-sym.sin(q), -sym.cos(q), 0, 0],
+        [sym.cos(q), -sym.sin(q), 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]])
+
+def Tx(x):
+  T = np.array([[1, 0, 0, x],
+                [0, 1, 0, 0],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Ty(y):
+  T = np.array([[1, 0, 0, 0],
+                [0, 1, 0, y],
+                [0, 0, 1, 0],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Tz(z):
+  T = np.array([[1, 0, 0, 0],
+                [0, 1, 0, 0],
+                [0, 0, 1, z],
+                [0, 0, 0, 1]], dtype=float)
+  return T
+
+def Tx_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, s],
+        [0, 1, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def Ty_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, 1, 0, s],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1]]
+  )
+
+def Tz_sym(s):
+  return sym.Matrix(
+      [[1, 0, 0, 0],
+        [0, 1, 0, 0],
+        [0, 0, 1, s],
+        [0, 0, 0, 1]]
+  )
+
+def d_Tx(x):
+  T = np.array([[0, 0, 0, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+def d_Ty(y):
+  T = np.array([[0, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 0, 0],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+def d_Tz(z):
+  T = np.array([[0, 0, 0, 0],
+                [0, 0, 0, 0],
+                [0, 0, 0, 1],
+                [0, 0, 0, 0]], dtype=float)
+  return T
+
+
+def d_Tx_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Ty_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 0],
+        [0, 0, 0, 0]]
+  )
+
+def d_Tz_sym():
+  return sym.Matrix(
+      [[0, 0, 0, 0],
+        [0, 0, 0, 0],
+        [0, 0, 0, 1],
+        [0, 0, 0, 0]]
+  )
+
+
+
 def plot_robots(rob_cnfs, traj_x, traj_y, traj_z):
     """
     rob_cnfs: list of robot configurations and plots each configuration
     """
 
     fig = go.Figure()
+
+    # fig.add_scatter3d(
+    #       x=traj_x,
+    #       y=traj_y,
+    #       z=traj_z,
+    #       hoverinfo='none',
+    #       marker=dict( size=0.1 ),
+    #       name = "desired trajectory"
+    # )
 
     for i, q_params in enumerate(rob_cnfs):
         q1, q2, q3, q4, q5 = q_params
@@ -54,6 +250,8 @@ def plot_robots(rob_cnfs, traj_x, traj_y, traj_z):
         T04 = T01 @ T12 @ T23 @ T34
         T05 = T01 @ T12 @ T23 @ T34 @ T45
         T06 = T01 @ T12 @ T23 @ T34 @ T45 @ T56
+        # T07 = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67
+        # T0E = T01 @ T12 @ T23 @ T34 @ T45 @ T56 @ T67 @ T7E
 
         x_pos = [T01[0, -1], T02[0, -1], T03[0, -1], T04[0, -1], T05[0, -1], T06[0, -1]]
         y_pos = [T01[1, -1], T02[1, -1], T03[1, -1], T04[1, -1], T05[1, -1], T06[1, -1]]
