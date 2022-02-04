@@ -15,7 +15,7 @@ def send(data, port=10003, addr='192.169.2.15'):
     s.setsockopt(socket.IPPROTO_IP, socket.IP_MULTICAST_TTL, 20)  # Change TTL (=20) to suit
     # Send the data
     s.sendto(data, (addr, port))
-
+# 4
 
 def recv(port=10003, addr="192.169.2.15", buf_size=310):
     """recv([port[, addr[,buf_size]]]) - waits for a datagram and returns the data."""
