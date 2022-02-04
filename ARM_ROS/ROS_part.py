@@ -11,14 +11,18 @@ import math
 import time
 import sys
 import binascii
-def talker(x, y, z):
+
+
+def talker(q1, q2, q3, q4, q5):
     pub_p = rospy.Publisher('lefttop_point', Float32MultiArray, queue_size=1)
     rospy.init_node('talker', anonymous=True)
-    array = [x, y, z]
+    rate = rospy.Rate(10)
+
+    array = [q1, q2, q3, q4, q5]
     left_top = Float32MultiArray(data=array)
     rospy.loginfo(left_top)
     pub_p.publish(left_top)
-
+    rate.sleep()
 
 
 # Press the green button in the gutter to run the script.
@@ -26,27 +30,37 @@ if __name__ == u'__main__':
     # Create a TCP/IP socket
     sock2 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_address = ('', 10000)
-    print >>sys.stderr, 'starting up on %s port %s' % server_address
+    # print >>sys.stderr, 'starting up on %s port %s' % server_address
     sock2.bind(server_address)
     # Listen for incoming connections
     sock2.listen(1)
-    unpacker = struct.Struct('f f f')
+    unpacker = struct.Struct('f f f f f')
     try:
-        while(True):
-            print >>sys.stderr, 'waiting for a connection'
+        while (True):
+            # print >>sys.stderr, 'waiting for a connection'
+            print('waiting for a connection')
             connection, client_address = sock2.accept()
             try:
-                print >>sys.stderr, 'connection from', client_address
+                # print >>sys.stderr, 'connection from', client_address
+                print('connection from', client_address)
                 data = connection.recv(unpacker.size)
-                unpacked_data = unpacker.unpack(data)
-                print >>sys.stderr,  unpacked_data[0]
+
+                values_force = (0, 0, 0, 0)
+                packer_force = struct.Struct('f f f f')
+                packed_data_force = packer_force.pack(*values_force)
+                connection.sendall(packed_data_force)
+
+                print(struct.unpack("f f f f f", data))
+                unpacked_data = struct.unpack("f f f f f", data)
+                # print(unpacked_data)
+                # print(data)
+                # print >>sys.stderr,  unpacked_data[0]
                 try:
-                    talker(unpacked_data[0], unpacked_data[1], unpacked_data[2])
+                    talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4])
                 except rospy.ROSInterruptException:
-                    pass                    
+                    pass
             finally:
                 # Clean up the connection
                 connection.close()
     except KeyboardInterrupt:
         sock2.close()
-

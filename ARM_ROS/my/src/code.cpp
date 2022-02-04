@@ -2,6 +2,9 @@
 #include <cmath>
 #include <functional>
 #include <ros/ros.h>
+#include "std_msgs/String.h"
+#include <sstream>
+
 // services
 #include <iiwa_ros/service/control_mode.hpp>
 #include <iiwa_ros/service/path_parameters.hpp>
@@ -17,6 +20,7 @@
 #include <iiwa_ros/state/cartesian_pose.hpp>
 #include <iiwa_ros/state/joint_velocity.hpp>
 #include <iiwa_ros/state/joint_position.hpp>
+#include <iiwa_ros/state/external_joint_torque.hpp>
 // conversions functions hpp_file
 #include <iiwa_ros/conversions.hpp>
 // messages
@@ -25,9 +29,9 @@
 #include <geometry_msgs/PoseStamped.h>
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32MultiArray.h>
-std::vector<float> desired_pose={0, 0, 0};
-std::vector<float> joint_desired_pose={0, 0, 0};//q1,q3,q4 from arm to ste same kuka
-std::vector<float> desired_posekuka={0, 0, 0};
+std::vector<float> desired_pose = {0, 0, 0, 0};
+std::vector<float> joint_desired_pose = {0, 0, 0, 0, 0}; // q1,q3,q4 from arm to ste same kuka
+std::vector<float> desired_posekuka = {0, 0, 0, 0};
 
 // void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
 // {
@@ -40,22 +44,23 @@ std::vector<float> desired_posekuka={0, 0, 0};
 //     if (time > 0.0) {
 //         // ROS_INFO_STREAM("Sleeping for " << time << " seconds.");
 //         ros::Duration(time).sleep();
-//     } 
+//     }
 // }
 
 void pose_callback(std_msgs::Float32MultiArray msg)
 {
-   // if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
+    // if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
     {
         joint_desired_pose[0] = msg.data[0];
         joint_desired_pose[1] = msg.data[1];
         joint_desired_pose[2] = msg.data[2];
+        joint_desired_pose[3] = msg.data[3];
+        joint_desired_pose[4] = msg.data[4];
     }
     // else
     // {
     //     desired_pose = {0, 0, 0};
     // }
-
 }
 
 // void chatterCallback_Kuka(const std_msgs::Float32MultiArray::ConstPtr& msg)
@@ -75,7 +80,7 @@ int main(int argc, char **argv)
     ros::AsyncSpinner spinner(1);
     spinner.start();
     // Wait a bit, so that you can be sure the subscribers are connected.
-    ros::Duration(0.1).sleep();
+    ros::Duration(0.05).sleep();
 
     // *** decleare ***
     // services
@@ -94,12 +99,13 @@ int main(int argc, char **argv)
     iiwa_ros::state::CartesianPose cp_state;
     iiwa_ros::state::JointVelocity jv_state;
     iiwa_ros::state::JointPosition jp_state;
+    iiwa_ros::state::ExternalJointTorque exjt_state;
     // cartesian position msg
     geometry_msgs::PoseStamped init_pos, new_pose;
     // cartesian velocity msg
     geometry_msgs::Twist cartesian_velocity;
-    
-    double vel = 0.05;
+
+    double vel = 0.75;
     double Jvel = 0.15;
     cartesian_velocity.linear.x = vel;
     cartesian_velocity.linear.y = vel;
@@ -109,7 +115,7 @@ int main(int argc, char **argv)
     cartesian_velocity.angular.z = vel;
     ros::Subscriber sub = nh.subscribe("/lefttop_point", 1000, pose_callback);
     ros::spinOnce();
-       // *** initialize ***
+    // *** initialize ***
     // services
     control_mode.init("iiwa");
     j_vel.init("iiwa");
@@ -125,38 +131,54 @@ int main(int argc, char **argv)
     cp_state.init("iiwa");
     jv_state.init("iiwa");
     jp_state.init("iiwa");
+    exjt_state.init("iiwa");
+
+    ros::Publisher chatter_pub = nh.advertise<std_msgs::Float32MultiArray>("Torque_public", 1000);
+
     // set the cartesian and joints velocity limit
-    c_vel.setMaxCartesianVelocity(cartesian_velocity); 
-    j_vel.setSmartServoJointSpeedLimits(0.25, 1.0);
-    ros::Duration(0.5).sleep();  // wait to initialize ros topics
-    std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
-    while(true){     
+    c_vel.setMaxCartesianVelocity(cartesian_velocity);
+    j_vel.setSmartServoJointSpeedLimits(0.05, 0.05);
+    ros::Duration(0.1).sleep(); // wait to initialize ros topics
+    // std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
+    while (true)
+    {
         auto cartesian_position = cp_state.getPose();
         auto joint_position = jp_state.getPosition();
-                
+        auto force = exjt_state.getTorque();
+        std_msgs::Float32MultiArray msg;
 
-        //init_pos = cartesian_position.poseStamped;
-        
+        msg.data = {force.torque.a1, force.torque.a2,
+                    force.torque.a3, force.torque.a4, force.torque.a5,
+                    force.torque.a6, force.torque.a7};
+        // std::cout << msg << std::endl;
+//        ROS_INFO("%s\n\n", msg.data.c_str());
 
-        
-        //init_pos.pose.position.z = init_pos.pose.position.z + 0.08;
-        //my_iiwa_ros_object.getPathParametersService().setJointRelativeVelocity(0.1)
-        //std::cout<<std::to_string(jv_state.getVelocity());
-        //std::cout<<std::to_string(init_pos.pose.position.x)<<", "<<std::to_string(init_pos.pose.position.y)<<", "<<std::to_string(init_pos.pose.position.z)<<std::endl;
-        //ros::Duration(8.5).sleep();
-        // init_pos = joint_position.
-        if(fabs(joint_desired_pose[0] - joint_position.position.a4) > 0 or
-	   fabs(joint_desired_pose[1] - joint_position.position.a1) > 0 or
-           fabs(joint_desired_pose[2] - joint_position.position.a6) > 0){
-            joint_position.position.a1 = joint_desired_pose[1];
-            //joint_position.position.a6 = joint_desired_pose[2];
-            //joint_position.position.a4 = -3.14/2 - joint_desired_pose[0];
-            //init_pos.pose.position.x = desired_pose[0];
-            //init_pos.pose.position.y = desired_pose[1];
-            //init_pos.pose.position.z = desired_pose[2];
-            jp_command.setPosition(joint_position);
-           //std::cout<<std::to_string(joint_desired_pose[0])<<", "<<std::to_string(init_pos.pose.position.y)<<", "<<std::to_string(init_pos.pose.position.z)<<std::endl;
+        chatter_pub.publish(msg);
+        joint_position.position.a1 = joint_desired_pose[0];
+        joint_position.position.a2 = -joint_desired_pose[1] + 3.14/4;
+        joint_position.position.a4 = -joint_desired_pose[2] - 3.14/2 - 3.14/4;
+        if(joint_position.position.a4 < -1.7){
+            joint_position.position.a4 = -1.7;
+        }
+        joint_position.position.a5 = joint_desired_pose[3]-0.7;
+        joint_position.position.a6 = joint_desired_pose[4] * 2.65;
+        if(abs(joint_position.position.a6) < 0.1){
+            joint_position.position.a6 = 0;
+        }
+        jp_command.setPosition(joint_position);
+
+        if (fabs(joint_desired_pose[0] - joint_position.position.a4) > 0 or
+            fabs(joint_desired_pose[1] - joint_position.position.a1) > 0 or
+            fabs(joint_desired_pose[2] - joint_position.position.a6) > 0)
+        {
+            // joint_position.position.a1 = joint_desired_pose[1];
+            // joint_position.position.a6 = joint_desired_pose[2];
+            // joint_position.position.a4 = -3.14/2 - joint_desired_pose[0];
+            // init_pos.pose.position.x = desired_pose[0];
+            // init_pos.pose.position.y = desired_pose[1];
+            // init_pos.pose.position.z = desired_pose[2];
+            // jp_command.setPosition(joint_position);
+                std::cout<<std::to_string(joint_desired_pose[0])<<", "<<std::to_string(joint_desired_pose[1])<<", "<<std::to_string(joint_position.position.a4)<<", "<<std::to_string(joint_desired_pose[3])<<std::endl;
         }
     }
-
 }
