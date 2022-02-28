@@ -156,3 +156,22 @@ if __name__ == '__main__':
         #     print(struct.unpack("f f f f", data))
         # finally:
         #     sock.close()
+
+
+        print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
+        print('Exoskeleton_data got')
+        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ('10.100.20.119', 10000)
+        sock.connect(server_address)
+
+        values = (q3, q1, q4, q5, q7,   q10, q8, q11, q12, q14)
+        # values = (10, 15, 20, 25)
+        packer = struct.Struct('f f f f f f f f f f')
+        packed_data = packer.pack(*values)
+        try:
+            sock.sendall(packed_data)
+            data = sock.recv(20)
+            # time.sleep(0.5)
+            print(struct.unpack("f f f f", data))
+        finally:
+            sock.close()
