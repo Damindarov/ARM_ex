@@ -94,6 +94,7 @@ if __name__ == '__main__':
             8, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, 1616 + 550, 1616 + 700)
         send(pa)
         data, addr = sock.recvfrom(310)
+        sock.close()
 
         L_ShoulderF = struct.unpack('h', data[2:4])[0] * 0.085  # incorrect?
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150) * 0.08789063  # correct
@@ -120,21 +121,23 @@ if __name__ == '__main__':
 
         q1, q2, q3, q4, q5, q6, q7 = math.radians(L_ShoulderF), math.radians(L_Shoulder_S), math.radians(
             L_ElbowR), math.radians(L_Elbow), math.radians(L_WristR), math.radians(L_WristS), math.radians(L_WristF)
-        sock.close()
-        q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR), math.radians(R_Elbow), math.radians(R_WristR), math.radians(R_WristS), math.radians(R_WristF)
-        delta_W = (q12 - q5)
-        Kp_s = 150
-        Val_mins = -R_WristR / 0.085
-        Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
-        if q12 > q5:
-            Us = -Kp_s * delta_W * np.sign(delta_W)
-        else:
-            Us = Kp_s * delta_W * np.sign(delta_W)
+        q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR),\
+                                          math.radians(R_Elbow), math.radians(R_WristR), math.radians(R_WristS), math.radians(R_WristF)
+        # delta_W = (q12 - q5)
+        # Kp_s = 150
+        # Val_mins = -R_WristR / 0.085
+        # Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
+        # if q12 > q5:
+        #     Us = -Kp_s * delta_W * np.sign(delta_W)
+        # else:
+        #     Us = Kp_s * delta_W * np.sign(delta_W)
 
 
-        print(round(q5,2), round(q12,2), round(q5 - q12,2), int(Us), int(Val_mins), int(Val_maxs))
+        print('left ',round(q1,2), round(q2,2), round(q3,2), round(q4,2), round(q5,2), round(q6,2), round(q7,2),
+              'righ ',round(q8,2), round(q9,2), round(q10,2), round(q11,2), round(q12,2), round(q13,2), round(q14,2))
 
-        time.sleep(0.01)
+
+
         # q7 = q7 + 6.57
         # print(q3, q1, q4, q5, q7)
         # print('Exoskeleton_data got')

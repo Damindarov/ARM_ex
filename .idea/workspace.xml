@@ -1,36 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="ewf">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_29_2021_5_18_PM__Default_Changelist_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_10_29_2021_5_18_PM__Default_Changelist_.xml" afterDir="false" />
+    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Cleaned up the code, only the key parts remain">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARM_ROS/my/src/code.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/my/src/code.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Draw_workspace.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Force_Test.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Force_experiments.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test_connetion.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/Test_matrix.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/code_test.cpp" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/comunication.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/comunicatior.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/cpp_pyth.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/kekes.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main2.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main3.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/main4.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/plot34.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/point_cloud.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/q_collector.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/q_pointcloud (5).csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/q_pointcloud.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/q_pointcloud_reduced.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/subs.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tt.py" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/копия_блокнота_ exoskeleot_workspace_ipynb .py" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -253,12 +226,12 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.csvWriter" />
+      <item itemvalue="Python.plot34" />
       <item itemvalue="Python.Main_rasp" />
       <item itemvalue="Python.Test_connetion" />
       <item itemvalue="Python.Test_matrix" />
-      <item itemvalue="Python.csvWriter" />
       <item itemvalue="Python.main4" />
-      <item itemvalue="Python.plot34" />
       <item itemvalue="Python.server" />
     </list>
     <recent_temporary>
@@ -277,7 +250,7 @@
   </component>
   <component name="TaskManager">
     <task active="true" id="Default" summary="Default task">
-      <changelist id="e63984ea-4310-4320-b15a-aeac89f12da3" name="Default Changelist" comment="" />
+      <changelist id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Cleaned up the code, only the key parts remain" />
       <created>1633964851342</created>
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
@@ -402,7 +375,14 @@
       <option name="project" value="LOCAL" />
       <updated>1643232211341</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="Cleaned up the code, only the key parts remain">
+      <created>1643986678422</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1643986678422</updated>
+    </task>
+    <option name="localTasksCounter" value="19" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -443,6 +423,7 @@
     <MESSAGE value="Comunication class for simplify process set and get data prom pack" />
     <MESSAGE value="Fully functioning hands" />
     <MESSAGE value="Fully functioning hands + master slave WristR control" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fully functioning hands + master slave WristR control" />
+    <MESSAGE value="Cleaned up the code, only the key parts remain" />
+    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up the code, only the key parts remain" />
   </component>
 </project>
