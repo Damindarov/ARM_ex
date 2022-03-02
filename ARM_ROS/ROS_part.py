@@ -13,17 +13,20 @@ import sys
 import binascii
 
 
-def talker(q1, q2, q3, q4, q5):
+def talker(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10):
     pub_p = rospy.Publisher('lefttop_point', Float32MultiArray, queue_size=1)
     rospy.init_node('talker', anonymous=True)
-    rate = rospy.Rate(10)
+    rate = rospy.Rate(5)
 
-    array = [q1, q2, q3, q4, q5]
+    array = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10]
     left_top = Float32MultiArray(data=array)
     rospy.loginfo(left_top)
     pub_p.publish(left_top)
-    rate.sleep()
+    # rate.sleep()
 
+filename = 'data_point.csv'
+fields = ['time','q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10']
+rows = []
 
 # Press the green button in the gutter to run the script.
 if __name__ == u'__main__':
@@ -34,7 +37,7 @@ if __name__ == u'__main__':
     sock2.bind(server_address)
     # Listen for incoming connections
     sock2.listen(1)
-    unpacker = struct.Struct('f f f f f')
+    unpacker = struct.Struct('f f f f f f f f f f')
     try:
         while (True):
             # print >>sys.stderr, 'waiting for a connection'
@@ -45,18 +48,20 @@ if __name__ == u'__main__':
                 print('connection from', client_address)
                 data = connection.recv(unpacker.size)
 
-                values_force = (0, 0, 0, 0)
-                packer_force = struct.Struct('f f f f')
-                packed_data_force = packer_force.pack(*values_force)
-                connection.sendall(packed_data_force)
+                # values_force = (0, 0, 0, 0)
+                # packer_force = struct.Struct('f f f f')
+                # packed_data_force = packer_force.pack(*values_force)
+                # connection.sendall(packed_data_force)
 
-                print(struct.unpack("f f f f f", data))
-                unpacked_data = struct.unpack("f f f f f", data)
+                print(struct.unpack("f f f f f f f f f f", data))
+                unpacked_data = struct.unpack("f f f f f f f f f f", data)
                 # print(unpacked_data)
                 # print(data)
                 # print >>sys.stderr,  unpacked_data[0]
+                rows.append([time.time(), unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
+
                 try:
-                    talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4])
+                    talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9])
                 except rospy.ROSInterruptException:
                     pass
             finally:
@@ -64,3 +69,10 @@ if __name__ == u'__main__':
                 connection.close()
     except KeyboardInterrupt:
         sock2.close()
+        with open(filename + '1', 'w') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+            # writing the fields
+            csvwriter.writerow(fields)
+            # writing the data rows
+            csvwriter.writerows(rows)
