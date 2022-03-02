@@ -11,7 +11,7 @@ import math
 import time
 import sys
 import binascii
-
+import csv
 
 def talker(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10):
     pub_p = rospy.Publisher('lefttop_point', Float32MultiArray, queue_size=1)
@@ -38,8 +38,9 @@ if __name__ == u'__main__':
     # Listen for incoming connections
     sock2.listen(1)
     unpacker = struct.Struct('f f f f f f f f f f')
+    time_start = time.time()
     try:
-        while (True):
+        while (time_start + 40 > time.time()):
             # print >>sys.stderr, 'waiting for a connection'
             print('waiting for a connection')
             connection, client_address = sock2.accept()
@@ -67,6 +68,15 @@ if __name__ == u'__main__':
             finally:
                 # Clean up the connection
                 connection.close()
+        sock2.close()
+        with open(filename + '1', 'w') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+            # writing the fields
+            csvwriter.writerow(fields)
+            # writing the data rows
+            csvwriter.writerows(rows)
+
     except KeyboardInterrupt:
         sock2.close()
         with open(filename + '1', 'w') as csvfile:
