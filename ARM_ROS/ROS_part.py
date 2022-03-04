@@ -59,7 +59,7 @@ if __name__ == u'__main__':
                 # print(unpacked_data)
                 # print(data)
                 # print >>sys.stderr,  unpacked_data[0]
-                rows.append([time.time(), unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
+                rows.append([time.time() * 1000, unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
 
                 try:
                     talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9])

@@ -9,15 +9,14 @@
 # print(rows)
 # file.close()
 import pandas as pd
-import matplotlib.pyplot as plt
+import plotly.express as px
 
-plt.rcParams["figure.figsize"] = [7.50, 3.50]
-plt.rcParams["figure.autolayout"] = True
+df = pd.read_csv('/home/r/PycharmProjects/ARM_ex/ARM_ROS/data_point.csv')
+df1 = pd.read_csv('/home/r/catkin_ws/points_Kuka.csv')
 
-headers = ['time', 'q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10']
+print(df)
+print(df1.head())
+fig = px.line(df, x = 'time', y = 'q1', title='Apple Share Prices over time (2014)')
+fig1 = px.line(df1, x = 'time', y = 'q1', title='78епнг Share Prices over time (2014)')
 
-df = pd.read_csv('/home/r/PycharmProjects/ARM_ex/ARM_ROS/data_point.csv', names=headers)
-
-df.set_index('time').plot()
-
-plt.show()
+fig.show()

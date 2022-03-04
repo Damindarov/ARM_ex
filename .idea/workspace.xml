@@ -5,9 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Cleaned up the code, only the key parts remain">
-      <change afterPath="$PROJECT_DIR$/drawer.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/.~lock.data_point.csv#" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/drawer.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/drawer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -60,6 +61,9 @@
       <recent name="D:\Users\damin\PycharmProjects\ARM_ex-master" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ARM_ROS" />
+      <recent name="$PROJECT_DIR$/ARM_ROS/my" />
+      <recent name="$PROJECT_DIR$" />
       <recent name="D:\Users\damin\PycharmProjects\ARM_ex-master" />
     </key>
   </component>
@@ -396,7 +400,21 @@
       <option name="project" value="LOCAL" />
       <updated>1646242665137</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="Cleaned up the code, only the key parts remain">
+      <created>1646251213161</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1646251213161</updated>
+    </task>
+    <task id="LOCAL-00021" summary="Cleaned up the code, only the key parts remain">
+      <created>1646251357524</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1646251357524</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
