@@ -1,22 +1,30 @@
-# import csv
-# file = open("/home/r/PycharmProjects/ARM_ex/ARM_ROS/data_point.csv")
-# csvreader = csv.reader(file)
-# header = next(csvreader)
-# print(header)
-# rows = []
-# for row in csvreader:
-#     rows.append(row)
-# print(rows)
-# file.close()
+import csv
 import pandas as pd
-import plotly.express as px
+import matplotlib.pyplot as plt
 
-df = pd.read_csv('/home/r/PycharmProjects/ARM_ex/ARM_ROS/data_point.csv')
-df1 = pd.read_csv('/home/r/catkin_ws/points_Kuka.csv')
+print(pd.__version__)
 
-print(df)
-print(df1.head())
-fig = px.line(df, x = 'time', y = 'q1', title='Apple Share Prices over time (2014)')
-fig1 = px.line(df1, x = 'time', y = 'q1', title='78епнг Share Prices over time (2014)')
+kuka_time = []
+kuka_pos_q1 = []
+with open('/home/r/catkin_ws/New_points_Kuka.txt') as f:
+    for line in f:
+        l = line.split(", ")
+        t = l[0][4:]
+        t = int(t)
+        kuka_time.append(t)
 
-fig.show()
+        q1 = l[1]
+        q1 = float(q1)
+        kuka_pos_q1.append(q1)
+
+data = pd.read_csv("/home/r/PycharmProjects/ARM_ex/ARM_ROS/data_point.csv1")
+arm_time = data['time'].values
+arm_time_m = [i * 1000000000 for i in arm_time]
+arm_pos_q1 = data['q1'].values
+
+fig, ax = plt.subplots()
+ax.plot(kuka_time, kuka_pos_q1, label="Kuka")
+ax.plot(arm_time_m, arm_pos_q1, label="arm")
+ax.legend()
+
+plt.show()

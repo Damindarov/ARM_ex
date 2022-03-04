@@ -4,10 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Cleaned up the code, only the key parts remain">
+    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Add point saver">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARM_ROS/.~lock.data_point.csv#" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/data_point.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/drawer.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/drawer.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -89,7 +89,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="Test_connetion" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+    <configuration name="Test_listener_position" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="pythonProject" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -101,7 +101,7 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Test_connetion.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/ARM_ROS/Test_listener_position.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -240,18 +240,18 @@
       <item itemvalue="Python.csvWriter" />
       <item itemvalue="Python.plot34" />
       <item itemvalue="Python.Main_rasp" />
-      <item itemvalue="Python.Test_connetion" />
       <item itemvalue="Python.Test_matrix" />
       <item itemvalue="Python.main4" />
       <item itemvalue="Python.drawer" />
+      <item itemvalue="Python.Test_listener_position" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.drawer" />
+        <item itemvalue="Python.Test_listener_position" />
         <item itemvalue="Python.Main_rasp" />
         <item itemvalue="Python.Test_matrix" />
         <item itemvalue="Python.main4" />
-        <item itemvalue="Python.Test_connetion" />
       </list>
     </recent_temporary>
   </component>
@@ -414,7 +414,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646251357524</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="Add point saver">
+      <created>1646408635086</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1646408635086</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -455,6 +462,7 @@
     <MESSAGE value="Fully functioning hands" />
     <MESSAGE value="Fully functioning hands + master slave WristR control" />
     <MESSAGE value="Cleaned up the code, only the key parts remain" />
-    <option name="LAST_COMMIT_MESSAGE" value="Cleaned up the code, only the key parts remain" />
+    <MESSAGE value="Add point saver" />
+    <option name="LAST_COMMIT_MESSAGE" value="Add point saver" />
   </component>
 </project>

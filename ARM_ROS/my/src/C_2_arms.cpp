@@ -4,6 +4,10 @@
 #include <ros/ros.h>
 #include "std_msgs/String.h"
 #include <sstream>
+#include <fstream>
+#include <ctime>
+#include <sys/time.h>
+#include <chrono>
 
 // services
 #include <iiwa_ros/service/control_mode.hpp>
@@ -30,7 +34,6 @@
 #include <geometry_msgs/Twist.h>
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Bool.h>
-
 
 std::vector<float> desired_pose = {0, 0, 0, 0};
 std::vector<float> joint_desired_pose = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}; // q1,q3,q4 from arm to ste same kuka
@@ -159,12 +162,16 @@ int main(int argc, char **argv)
     // gripper_command.publish(gripper);
 
     // set the cartesian and joints velocity limit
-    c_vel.setMaxCartesianVelocity(cartesian_velocity);
-    j_vel.setSmartServoJointSpeedLimits(1.0, 0.75);
+    // c_vel.setMaxCartesianVelocity(cartesian_velocity);
+    j_vel.setSmartServoJointSpeedLimits(65.0, 1.00);
     ros::Duration(0.1).sleep(); // wait to initialize ros topics
     // std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
+
+    int skipper = -1000000;
     while (true)
     {
+
+
         auto cartesian_position = cp_state.getPose();
         auto joint_position = jp_state.getPosition();
         auto force = exjt_state.getTorque();
@@ -176,14 +183,46 @@ int main(int argc, char **argv)
         // std::cout << msg << std::endl;
 //        ROS_INFO("%s\n\n", msg.data.c_str());
 
+        // time_t curr_time;
+	    // curr_time = time(NULL);
+	    // time_t mnow = curr_time * 1000;
+        // if (skipper % 1500 == 0 ){
+
+        //     std::fstream fs;
+        //     fs.open ("points_Kuka.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+
+        //     fs<<"Time  ";
+        //     fs<< mnow;
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a1);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a2);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a3);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a4);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a5);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a6);
+        //     fs<<", ";
+        //     fs<<std::to_string(joint_position.position.a7);
+        //     fs<<", ";
+        //     fs<<'\n';
+        //     fs.close();
+
+
+        // }
+        // skipper++;
+
         chatter_pub.publish(msg);
         joint_position.position.a1 = joint_desired_pose[0]*0.8;
         
         joint_position.position.a2 = (joint_desired_pose[1] + 3.14/4)*0.8;
         joint_position.position.a4 = (-joint_desired_pose[2] - 3.14/2 - 3.14/4)*0.8;
-        // if(joint_position.position.a4 < -1.7){
-        //     joint_position.position.a4 = -1.7;
-        // }
+        if(joint_position.position.a4 < -1.7){
+            joint_position.position.a4 = -1.7;
+        }
         joint_position.position.a5 = (joint_desired_pose[3]-0.7)*0.8;
 
         // joint_position.position.a6 = (joint_desired_pose[4] * 2.65);
