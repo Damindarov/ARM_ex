@@ -40,7 +40,7 @@ if __name__ == u'__main__':
     unpacker = struct.Struct('f f f f f f f f f f')
     time_start = time.time()
     try:
-        while (time_start + 40 > time.time()):
+        while (True):
             # print >>sys.stderr, 'waiting for a connection'
             print('waiting for a connection')
             connection, client_address = sock2.accept()
@@ -54,9 +54,9 @@ if __name__ == u'__main__':
                 # packed_data_force = packer_force.pack(*values_force)
                 # connection.sendall(packed_data_force)
 
-                print(struct.unpack("f f f f f f f f f f", data))
+                # print(struct.unpack("f f f f f f f f f f", data))
                 unpacked_data = struct.unpack("f f f f f f f f f f", data)
-                # print(unpacked_data)
+                print(unpacked_data[0:5], '\n', unpacked_data[5:])
                 # print(data)
                 # print >>sys.stderr,  unpacked_data[0]
                 rows.append([time.time(), unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
@@ -69,20 +69,20 @@ if __name__ == u'__main__':
                 # Clean up the connection
                 connection.close()
         sock2.close()
-        with open(filename + '1', 'w') as csvfile:
-            # creating a csv writer object
-            csvwriter = csv.writer(csvfile)
-            # writing the fields
-            csvwriter.writerow(fields)
-            # writing the data rows
-            csvwriter.writerows(rows)
+        # with open(filename + '1', 'w') as csvfile:
+        #     # creating a csv writer object
+        #     csvwriter = csv.writer(csvfile)
+        #     # writing the fields
+        #     csvwriter.writerow(fields)
+        #     # writing the data rows
+        #     csvwriter.writerows(rows)
 
     except KeyboardInterrupt:
         sock2.close()
-        with open(filename + '1', 'w') as csvfile:
-            # creating a csv writer object
-            csvwriter = csv.writer(csvfile)
-            # writing the fields
-            csvwriter.writerow(fields)
-            # writing the data rows
-            csvwriter.writerows(rows)
+        # with open(filename + '1', 'w') as csvfile:
+        #     # creating a csv writer object
+        #     csvwriter = csv.writer(csvfile)
+        #     # writing the fields
+        #     csvwriter.writerow(fields)
+        #     # writing the data rows
+        #     csvwriter.writerows(rows)
