@@ -49,10 +49,10 @@ if __name__ == u'__main__':
                 print('connection from', client_address)
                 data = connection.recv(unpacker.size)
 
-                # values_force = (0, 0, 0, 0)
-                # packer_force = struct.Struct('f f f f')
-                # packed_data_force = packer_force.pack(*values_force)
-                # connection.sendall(packed_data_force)
+                values_force = (0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
+                packer_force = struct.Struct('f f f f f f f f f f')
+                packed_data_force = packer_force.pack(*values_force)
+                connection.sendall(packed_data_force)
 
                 # print(struct.unpack("f f f f f f f f f f", data))
                 unpacked_data = struct.unpack("f f f f f f f f f f", data)

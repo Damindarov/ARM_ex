@@ -170,8 +170,8 @@ if __name__ == '__main__':
         packed_data = packer.pack(*values)
         try:
             sock.sendall(packed_data)
-            #data = sock.recv(40)
+            data = sock.recv(40)
             # time.sleep(0.5)
-            #print(struct.unpack("f f f f f f f f", data))
+            print(struct.unpack("f f f f f f f f f f", data))
         finally:
             sock.close()
