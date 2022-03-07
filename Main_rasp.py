@@ -157,7 +157,7 @@ if __name__ == '__main__':
         # finally:
         #     sock.close()
 
-
+        time.sleep(0.05)
         print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
         print('Exoskeleton_data got')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -170,8 +170,8 @@ if __name__ == '__main__':
         packed_data = packer.pack(*values)
         try:
             sock.sendall(packed_data)
-            data = sock.recv(20)
+            #data = sock.recv(40)
             # time.sleep(0.5)
-            print(struct.unpack("f f f f", data))
+            #print(struct.unpack("f f f f f f f f", data))
         finally:
             sock.close()

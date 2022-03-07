@@ -40,7 +40,7 @@ if __name__ == u'__main__':
     unpacker = struct.Struct('f f f f f f f f f f')
     time_start = time.time()
     try:
-        while (True):
+        while (time_start + 35 > time.time()):
             # print >>sys.stderr, 'waiting for a connection'
             print('waiting for a connection')
             connection, client_address = sock2.accept()

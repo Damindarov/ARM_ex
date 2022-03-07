@@ -4,9 +4,10 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Keep data, Implement reader for read joint position in real time for compute time delaying. Start implementig secod arm and second kuka">
+    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="First and second arm is working in the same time">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -426,7 +427,14 @@
       <option name="project" value="LOCAL" />
       <updated>1646434160198</updated>
     </task>
-    <option name="localTasksCounter" value="24" />
+    <task id="LOCAL-00024" summary="First and second arm is working in the same time">
+      <created>1646441651844</created>
+      <option name="number" value="00024" />
+      <option name="presentableId" value="LOCAL-00024" />
+      <option name="project" value="LOCAL" />
+      <updated>1646441651844</updated>
+    </task>
+    <option name="localTasksCounter" value="25" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -469,6 +477,7 @@
     <MESSAGE value="Cleaned up the code, only the key parts remain" />
     <MESSAGE value="Add point saver" />
     <MESSAGE value="Keep data, Implement reader for read joint position in real time for compute time delaying. Start implementig secod arm and second kuka" />
-    <option name="LAST_COMMIT_MESSAGE" value="Keep data, Implement reader for read joint position in real time for compute time delaying. Start implementig secod arm and second kuka" />
+    <MESSAGE value="First and second arm is working in the same time" />
+    <option name="LAST_COMMIT_MESSAGE" value="First and second arm is working in the same time" />
   </component>
 </project>
