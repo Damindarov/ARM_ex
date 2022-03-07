@@ -5,9 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="First and second arm is working in the same time">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/ROS_part.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
