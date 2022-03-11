@@ -4,7 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Start implementing force feedback">
+    <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Implemented one side force applying">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
@@ -51,11 +51,12 @@
   <component name="PropertiesComponent">
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/catkin_ws/src/msg_py/src/ROS_part.py" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/ARM_ROS/my/src" />
     <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ARM_ROS/my/src" />
       <recent name="D:\Users\damin\PycharmProjects\ARM_ex-master" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
@@ -461,7 +462,14 @@
       <option name="project" value="LOCAL" />
       <updated>1647021545163</updated>
     </task>
-    <option name="localTasksCounter" value="29" />
+    <task id="LOCAL-00029" summary="Implemented one side force applying">
+      <created>1647028672291</created>
+      <option name="number" value="00029" />
+      <option name="presentableId" value="LOCAL-00029" />
+      <option name="project" value="LOCAL" />
+      <updated>1647028672291</updated>
+    </task>
+    <option name="localTasksCounter" value="30" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -506,6 +514,7 @@
     <MESSAGE value="Keep data, Implement reader for read joint position in real time for compute time delaying. Start implementig secod arm and second kuka" />
     <MESSAGE value="First and second arm is working in the same time" />
     <MESSAGE value="Start implementing force feedback" />
-    <option name="LAST_COMMIT_MESSAGE" value="Start implementing force feedback" />
+    <MESSAGE value="Implemented one side force applying" />
+    <option name="LAST_COMMIT_MESSAGE" value="Implemented one side force applying" />
   </component>
 </project>

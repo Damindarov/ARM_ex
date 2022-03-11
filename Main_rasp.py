@@ -177,6 +177,8 @@ if __name__ == '__main__':
             recieved_data = struct.unpack("f f f f f f f f f f f f f f f", data)
             delta_W = recieved_data[13] - q5
 
+
+
             Kp_s = 150
             Val_mins = R_WristR / 0.085
             Val_maxs = (R_WristR / 0.085 + np.sign(delta_W) * 10)
@@ -188,6 +190,6 @@ if __name__ == '__main__':
                 Us = -Kp_s * delta_W * np.sign(delta_W)
             else:
                 Us = Kp_s * delta_W * np.sign(delta_W)
-            print(recieved_data[3])
+            print(round(recieved_data[3], 2), round(Val_maxs,2))
         finally:
             sock.close()
