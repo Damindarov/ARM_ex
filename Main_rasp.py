@@ -75,7 +75,7 @@ if __name__ == '__main__':
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # плечо левая
-            2, MODE, int(Us), TORQUE, CENTER, STIFF, 0, int(Val_mins), int(Val_maxs),  # кисть
+            2, MODE, int(Us), TORQUE, CENTER, STIFF, 36, int(Val_mins), int(Val_maxs),  # кисть
             3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
@@ -173,15 +173,16 @@ if __name__ == '__main__':
             data = sock.recv(40)
             # time.sleep(0.5)
             # print(struct.unpack("f f f f f f f f f f f f f f f", data))
-            delta_W = (data[13] - q5)
+            recieved_data = struct.unpack("f f f f f f f f f f f f f f f", data)
+            delta_W = recieved_data[13] - q5
             print(delta_W)
-            # Kp_s = 150
-            # Val_mins = -R_WristR / 0.085
-            # Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
-            # if q12 > q5:
-            #     Us = -Kp_s * delta_W * np.sign(delta_W)
-            # else:
-            #     Us = Kp_s * delta_W * np.sign(delta_W)
+            Kp_s = 10
+            Val_mins = -R_WristR / 0.085
+            Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
+            if q12 > q5:
+                Us = -Kp_s * delta_W * np.sign(delta_W)
+            else:
+                Us = Kp_s * delta_W * np.sign(delta_W)
 
         finally:
             sock.close()
