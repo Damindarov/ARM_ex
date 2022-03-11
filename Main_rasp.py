@@ -180,8 +180,8 @@ if __name__ == '__main__':
 
 
             Kp_s = 150
-            Val_mins = L_WristR / 0.085
-            Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10)
+            Val_mins = L_WristR / 0.085 + recieved_data[3] * 10
+            Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10) + recieved_data[3] * 10
             if abs(delta_W) < 0.05:
                 enable = 0
             else:
@@ -190,6 +190,6 @@ if __name__ == '__main__':
                 Us = -Kp_s * delta_W * np.sign(delta_W)
             else:
                 Us = Kp_s * delta_W * np.sign(delta_W)
-            print(round(recieved_data[3], 2), round(Val_maxs,2))
+            print(round(recieved_data[3], 2), round(Val_maxs,2), round(recieved_data[3] * 10,2))
         finally:
             sock.close()
