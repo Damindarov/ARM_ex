@@ -133,8 +133,8 @@ if __name__ == '__main__':
         #     Us = Kp_s * delta_W * np.sign(delta_W)
 
 
-        print('left ',round(q1,2), round(q2,2), round(q3,2), round(q4,2), round(q5,2), round(q6,2), round(q7,2),
-              'righ ',round(q8,2), round(q9,2), round(q10,2), round(q11,2), round(q12,2), round(q13,2), round(q14,2))
+        # print('left ',round(q1,2), round(q2,2), round(q3,2), round(q4,2), round(q5,2), round(q6,2), round(q7,2),
+        #       'righ ',round(q8,2), round(q9,2), round(q10,2), round(q11,2), round(q12,2), round(q13,2), round(q14,2))
 
 
 
@@ -158,8 +158,8 @@ if __name__ == '__main__':
         #     sock.close()
 
         time.sleep(0.05)
-        print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
-        print('Exoskeleton_data got')
+        # print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
+        # print('Exoskeleton_data got')
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         server_address = ('10.100.20.119', 10000)
         sock.connect(server_address)
@@ -172,6 +172,16 @@ if __name__ == '__main__':
             sock.sendall(packed_data)
             data = sock.recv(40)
             # time.sleep(0.5)
-            print(struct.unpack("f f f f f f f f f f", data))
+            # print(struct.unpack("f f f f f f f f f f f f f f f", data))
+            delta_W = (data[13] - q5)
+            print(delta_W)
+            # Kp_s = 150
+            # Val_mins = -R_WristR / 0.085
+            # Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
+            # if q12 > q5:
+            #     Us = -Kp_s * delta_W * np.sign(delta_W)
+            # else:
+            #     Us = Kp_s * delta_W * np.sign(delta_W)
+
         finally:
             sock.close()
