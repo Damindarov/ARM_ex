@@ -180,9 +180,9 @@ if __name__ == '__main__':
 
 
             Kp_s = 150
-            Val_mins = L_WristR / 0.085 + recieved_data[3] * 10
-            Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10 + recieved_data[3] * 10)
-            if abs(delta_W) < 0.05 or not (abs(recieved_data[3]*10) > 1.5):
+            Val_mins = L_WristR / 0.085 + recieved_data[3] * 1000
+            Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10 + recieved_data[3] * 1000)
+            if abs(delta_W) < 0.05 or not (abs(recieved_data[3]*15) > 1.5):
                 enable = 0
             else:
                 enable = 36
