@@ -12,16 +12,11 @@ import time
 import sys
 import binascii
 import csv
-def talker(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10):
-    pub_p = rospy.Publisher('lefttop_point', Float32MultiArray, queue_size=1)
-    rospy.init_node('talker', anonymous=False)
-    # rate = rospy.Rate(5)
-
+def talker(q1, q2, q3, q4, q5, q6, q7, q8, q9, q10,pub_p):
     array = [q1, q2, q3, q4, q5, q6, q7, q8, q9, q10]
     left_top = Float32MultiArray(data=array)
-    rospy.loginfo(left_top)
+    # rospy.loginfo(left_top)
     pub_p.publish(left_top)
-    # rate.sleep()
 
 desired_force = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
 position_force = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
@@ -44,7 +39,7 @@ def callback_positioin(data):
     # print(data.data[3])
     # rospy.loginfo(rospy.get_caller_id(), data.data)
 
-filename = 'data_point.csv'
+filename = 'data_point_ROS_part.csv'
 fields = ['time','q1', 'q2', 'q3', 'q4', 'q5', 'q6', 'q7', 'q8', 'q9', 'q10']
 rows = []
 rows_prime = [] #real value of kuka
@@ -62,10 +57,11 @@ if __name__ == u'__main__':
     time_start = time.time()
     rospy.Subscriber("/force_repiter", Float32MultiArray, callback_force)
     rospy.Subscriber("/position_repiter", Float32MultiArray, callback_positioin)
+    pub_p = rospy.Publisher('/lefttop_point', Float32MultiArray, queue_size=10)
     try:
-        while (time_start + 35 > time.time()):
+        while (time_start + 45 > time.time()):
             # print >>sys.stderr, 'waiting for a connection'
-            print('waiting for a connection')
+            # print('waiting for a connection')
             connection, client_address = sock2.accept()
 
             try:
@@ -76,36 +72,41 @@ if __name__ == u'__main__':
                 values_force = (desired_force[0], desired_force[1], desired_force[2], desired_force[3], desired_force[4], 0, 0, 0, 0, 0, position_force[0],position_force[1],position_force[2],position_force[3],position_force[4])
                 packer_force = struct.Struct('f f f f f f f f f f f f f f f')
                 packed_data_force = packer_force.pack(*values_force)
-                connection.sendall(packed_data_force)
+                # connection.sendall(packed_data_force)
 
                 # print(struct.unpack("f f f f f f f f f f", data))
                 unpacked_data = struct.unpack("f f f f f f f f f f", data)
                 # print(unpacked_data[0:5], '\n', unpacked_data[5:])
                 # print(data)
                 # print >>sys.stderr,  unpacked_data[0]
-                # rows.append([time.time(), unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
+                rows.append([time.time(), unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]])
                 try:
-                    talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9])
+                    # talker(unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9],pub_p)
+                    array = [unpacked_data[0], unpacked_data[1], unpacked_data[2], unpacked_data[3], unpacked_data[4], unpacked_data[5], unpacked_data[6], unpacked_data[7], unpacked_data[8], unpacked_data[9]]
+                    # array = [0,0,0,0,0,0,0,0,0,0]
+                    left_top = Float32MultiArray(data=array)
+                    # rospy.loginfo(left_top)
+                    pub_p.publish(left_top)
                 except rospy.ROSInterruptException:
                     pass
             finally:
                 # Clean up the connection
                 connection.close()
         sock2.close()
-        # with open(filename + '1', 'w') as csvfile:
-        #     # creating a csv writer object
-        #     csvwriter = csv.writer(csvfile)
-        #     # writing the fields
-        #     csvwriter.writerow(fields)
-        #     # writing the data rows
-        #     csvwriter.writerows(rows)
+        with open(filename, 'w') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+            # writing the fields
+            csvwriter.writerow(fields)
+            # writing the data rows
+            csvwriter.writerows(rows)
 
     except KeyboardInterrupt:
         sock2.close()
-        # with open(filename + '1', 'w') as csvfile:
-        #     # creating a csv writer object
-        #     csvwriter = csv.writer(csvfile)
-        #     # writing the fields
-        #     csvwriter.writerow(fields)
-        #     # writing the data rows
-        #     csvwriter.writerows(rows)
+        with open(filename, 'w') as csvfile:
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+            # writing the fields
+            csvwriter.writerow(fields)
+            # writing the data rows
+            csvwriter.writerows(rows)

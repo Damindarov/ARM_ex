@@ -73,10 +73,11 @@ if __name__ == '__main__':
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((UDP_IP, UDP_PORT))
         frame = []
+        # 2, MODE, int(Us), TORQUE, CENTER, STIFF, enable, int(Val_maxs), int(Val_maxs),
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # плечо левая
-            2, MODE, int(Us), TORQUE, CENTER, STIFF, enable, int(Val_maxs), int(Val_maxs),  # кисть
+            2, MODE, int(Us), 0, CENTER, STIFF, enable, int(Val_maxs), int(Val_mins),  # кисть
             3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
@@ -101,7 +102,7 @@ if __name__ == '__main__':
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150) * 0.08789063  # correct
         L_ElbowR = (struct.unpack('h', data[268:270])[0] - 2088) * 0.08789063  # correct
         L_Elbow = struct.unpack('h', data[34:36])[0] * -0.02  # correct
-        L_WristR = (0 - struct.unpack('h', data[18:20])[0]) * 0.085  # correct
+        L_WristR = (5000 - struct.unpack('h', data[18:20])[0]) * 0.085  # correct
         L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630) * 0.08789063  # incorrect?
         L_WristF = ((0 - struct.unpack('h', data[264:266])[0]) - 2230) * 0.08789063
         # block for fingers
@@ -124,16 +125,39 @@ if __name__ == '__main__':
             L_ElbowR), math.radians(L_Elbow), math.radians(L_WristR), math.radians(L_WristS), math.radians(L_WristF)
         q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR),\
                                           math.radians(R_Elbow), math.radians(R_WristR), math.radians(R_WristS), math.radians(R_WristF)
-        # delta_W = (q12 - q5)
-        # Kp_s = 150
-        # Val_mins = -R_WristR / 0.085
-        # Val_maxs = -(R_WristR / 0.085 + np.sign(delta_W) * 10)
+        delta_W = (q12 - q5)
+        Kp_s = -110
+        # target = -5000
+        # delt = abs(struct.unpack('h', data[18:20])[0] - target)
+        # Us = Kp_s*np.sign(struct.unpack('h', data[18:20])[0] - target)
+        # Val_mins = target
+        # Val_maxs = target
+
+        Val_mins = -(500+R_WristR / 0.085)
+        Val_maxs = -(500+R_WristR / 0.085)
+        # enable = 36
+        Us = Kp_s * np.sign(delta_W)
+
         # if q12 > q5:
-        #     Us = -Kp_s * delta_W * np.sign(delta_W)
+        #     Us = -Kp_s * delta_W
         # else:
         #     Us = Kp_s * delta_W * np.sign(delta_W)
 
-
+        # if q12 > 0.02:
+        #     Val_mins = -R_WristR / 0.085
+        #     Val_maxs = -(R_WristR / 0.085)
+        #     if q12 > q5:
+        #         Us = -Kp_s * delta_W
+        #     else:
+        #         Us = Kp_s * delta_W * np.sign(delta_W)
+        # else:
+        #     Val_mins = R_WristR / 0.085
+        #     Val_maxs = (R_WristR / 0.085)
+        #     if q12 < q5:
+        #         Us = (Kp_s)
+        #     else:
+        #         Us = -(Kp_s)
+        print(round(struct.unpack('h', data[18:20])[0],2), struct.unpack('h', data[146:148])[0], round(Us,2))
         # print('left ',round(q1,2), round(q2,2), round(q3,2), round(q4,2), round(q5,2), round(q6,2), round(q7,2),
         #       'righ ',round(q8,2), round(q9,2), round(q10,2), round(q11,2), round(q12,2), round(q13,2), round(q14,2))
 
@@ -161,35 +185,51 @@ if __name__ == '__main__':
         time.sleep(0.05)
         # print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
         # print('Exoskeleton_data got')
-        sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        server_address = ('10.100.20.119', 10000)
-        sock.connect(server_address)
-
-        values = (q3, q1, q4, q5, q7,   q10, q8, q11, q12, q14)
-        # values = (10, 15, 20, 25)
-        packer = struct.Struct('f f f f f f f f f f')
-        packed_data = packer.pack(*values)
-        try:
-            sock.sendall(packed_data)
-            data = sock.recv(60)
-            # time.sleep(0.5)
-            # print(struct.unpack("f f f f f f f f f f f f f f f", data))
-            recieved_data = struct.unpack("f f f f f f f f f f f f f f f", data)
-            delta_W = recieved_data[13] - q5
 
 
 
-            Kp_s = 150
-            Val_mins = L_WristR / 0.085 + recieved_data[3] * 1000
-            Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10 + recieved_data[3] * 1000)
-            if abs(delta_W) < 0.05 or not (abs(recieved_data[3]*15) > 1.5):
-                enable = 0
-            else:
-                enable = 0
-            if q12 > q5:
-                Us = -Kp_s * delta_W * np.sign(delta_W)
-            else:
-                Us = Kp_s * delta_W * np.sign(delta_W)
-            print(round(recieved_data[3], 2), round(Val_maxs,2), round(recieved_data[3] * 10,2))
-        finally:
-            sock.close()
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # server_address = ('10.100.20.119', 10000)
+        # sock.connect(server_address)
+        #
+        # values = (q3, q1, q4, q5, q7,   q10, q8, q11, q12, q14)
+        # # values = (10, 15, 20, 25)
+        # packer = struct.Struct('f f f f f f f f f f')
+        # packed_data = packer.pack(*values)
+        # try:
+        #     sock.sendall(packed_data)
+        #     data = sock.recv(60)
+        #     # time.sleep(0.5)
+        #     # print(struct.unpack("f f f f f f f f f f f f f f f", data))
+        #     recieved_data = struct.unpack("f f f f f f f f f f f f f f f", data)
+        #     delta_W = recieved_data[13] - q5
+        #
+        #
+        #
+        #     Kp_s = 150
+        #     Val_mins = L_WristR / 0.085 + recieved_data[3] * 1000
+        #     Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10 + recieved_data[3] * 1000)
+        #     if abs(delta_W) < 0.05 or not (abs(recieved_data[3]*15) > 1.5):
+        #         enable = 0
+        #     else:
+        #         enable = 36
+        #     if q12 > q5:
+        #         Us = -Kp_s * delta_W * np.sign(delta_W)
+        #     else:
+        #         Us = Kp_s * delta_W * np.sign(delta_W)
+        #     print(round(recieved_data[3], 2), round(Val_maxs,2), round(recieved_data[3] * 10,2))
+        # finally:
+        #     sock.close()
