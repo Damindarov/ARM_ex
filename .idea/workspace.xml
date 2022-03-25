@@ -240,13 +240,13 @@
       <method v="2" />
     </configuration>
     <list>
-      <item itemvalue="Python.Main_rasp" />
-      <item itemvalue="Python.Main_rasp_PC" />
-      <item itemvalue="Python.ROS_part" />
-      <item itemvalue="Python.Test_listener_position" />
       <item itemvalue="Python.csvWriter" />
-      <item itemvalue="Python.drawer" />
       <item itemvalue="Python.plot34" />
+      <item itemvalue="Python.Main_rasp" />
+      <item itemvalue="Python.drawer" />
+      <item itemvalue="Python.Test_listener_position" />
+      <item itemvalue="Python.ROS_part" />
+      <item itemvalue="Python.Main_rasp_PC" />
     </list>
     <recent_temporary>
       <list>
@@ -515,7 +515,14 @@
       <option name="project" value="LOCAL" />
       <updated>1647030790282</updated>
     </task>
-    <option name="localTasksCounter" value="36" />
+    <task id="LOCAL-00036" summary="Implemented one side force applying. Start dev back force">
+      <created>1647873604626</created>
+      <option name="number" value="00036" />
+      <option name="presentableId" value="LOCAL-00036" />
+      <option name="project" value="LOCAL" />
+      <updated>1647873604626</updated>
+    </task>
+    <option name="localTasksCounter" value="37" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
