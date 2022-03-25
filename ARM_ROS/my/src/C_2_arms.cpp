@@ -91,8 +91,8 @@ int main(int argc, char **argv)
     ros::init(argc, argv, "tele_iiwa");
     ros::NodeHandle nh;
     // ros spinner
-    ros::AsyncSpinner spinner(1);
-    spinner.start();
+    // ros::AsyncSpinner spinner(1);
+    // spinner.start();
     // Wait a bit, so that you can be sure the subscribers are connected.
     ros::Duration(0.05).sleep();
 

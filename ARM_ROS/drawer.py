@@ -32,6 +32,7 @@ arm_pos_q1 = data['q1'].values
 import plotly.graph_objects as go
 import plotly.express as px
 
+
 colors = px.colors.qualitative.Plotly
 fig = go.Figure()
 fig.add_traces(go.Scatter(x=arm_time_m, y = arm_pos_q1, mode = 'lines', line=dict(color=colors[0]), name ="raspberry"))
