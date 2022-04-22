@@ -5,12 +5,8 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Implemented one side force applying. Start dev back force">
-      <change afterPath="$PROJECT_DIR$/ARM_ROS/drawer_speed_cooridnates.py" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ARM_ROS/hand2.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARM_ROS/drawer.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/drawer.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/points_Kuka_cpp.txt" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/points_raspberry.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -546,7 +542,14 @@
       <option name="project" value="LOCAL" />
       <updated>1648214820942</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="Implemented one side force applying. Start dev back force">
+      <created>1650634612141</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1650634612141</updated>
+    </task>
+    <option name="localTasksCounter" value="41" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

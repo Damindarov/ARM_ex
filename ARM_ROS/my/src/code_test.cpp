@@ -52,24 +52,8 @@ std::vector<float> desired_posekuka = {0, 0, 0, 0};
 
 using namespace std::chrono;
 
-// void waitForMotion(iiwa_ros::service::TimeToDestinationService& time_2_dist, double time_out = 2.0)
-// {
-//     double time = time_2_dist.getTimeToDestination();
-//     ros::Time start_wait = ros::Time::now();
-//     while (time < 0.0 && (ros::Time::now() - start_wait) < ros::Duration(time_out)) {
-//         ros::Duration(0.5).sleep();
-//         time = time_2_dist.getTimeToDestination();
-//     }
-//     if (time > 0.0) {
-//         // ROS_INFO_STREAM("Sleeping for " << time << " seconds.");
-//         ros::Duration(time).sleep();
-//     }
-// }
-
 void pose_callback(std_msgs::Float32MultiArray msg)
 {
-    // if (fabs(desired_pose[0]-msg.data[0]) > 0.02 && fabs(desired_pose[1]-msg.data[1]) > 0.02 && fabs(desired_pose[2]-msg.data[2]) > 0.02 )
-    {
         joint_desired_pose[0] = msg.data[0];
         joint_desired_pose[1] = msg.data[1];
         joint_desired_pose[2] = msg.data[2];
@@ -81,24 +65,13 @@ void pose_callback(std_msgs::Float32MultiArray msg)
         joint_desired_pose[7] = msg.data[7];
         joint_desired_pose[8] = msg.data[8];
         joint_desired_pose[9] = msg.data[9];
-        
-    }
-    // else
-    // {
-    //     desired_pose = {0, 0, 0};
-    // }
 }
-
-// void chatterCallback_Kuka(const std_msgs::Float32MultiArray::ConstPtr& msg)
-// {
-//     ROS_INFO("I heard: [%f],[%f],[%f],[%f]", msg->data.at(0),msg->data.at(1),msg->data.at(2),msg->data.at(3));
-//     desired_posekuka[0] = msg.data[0];
-//     desired_posekuka[1] = msg.data[1];
-//     desired_posekuka[2] = msg.data[2];
-// }
 
 int main(int argc, char **argv)
 {
+    bool iiwa1 = false;
+    bool iiwa2 = true;
+    bool read_write = false;
 
     ros::init(argc, argv, "tele_iiwa");
     ros::NodeHandle nh;
@@ -107,6 +80,7 @@ int main(int argc, char **argv)
     spinner.start();
     // Wait a bit, so that you can be sure the subscribers are connected.
     ros::Duration(0.05).sleep();
+
 
     // *** decleare ***
     // services
@@ -165,64 +139,54 @@ int main(int argc, char **argv)
     cartesian_velocity.angular.y = vel;
     cartesian_velocity.angular.z = vel;
     ros::Subscriber sub = nh.subscribe("/lefttop_point", 1000, pose_callback);
-    
+
     ros::Publisher force_repiter = nh.advertise<std_msgs::Float32MultiArray>("force_repiter", 1000);
     ros::Publisher position_repiter = nh.advertise<std_msgs::Float32MultiArray>("position_repiter", 1000);
 
     ros::spinOnce();
     // *** initialize ***
-    // services
-    control_mode.init("iiwa");
-    j_vel.init("iiwa");
-    c_vel.init("iiwa");
-    time_to_dist.init("iiwa");
-    // commands
-    cp_command.init("iiwa");
-    cpl_command.init("iiwa");
-    jp_command.init("iiwa");
-    jv_command.init("iiwa");
-    // states
-    cw_state.init("iiwa");
-    cp_state.init("iiwa");
-    jv_state.init("iiwa");
-    jp_state.init("iiwa");
-    exjt_state.init("iiwa");
+    if (iiwa2 == true){
+        // services
+        control_mode.init("iiwa2");
+        j_vel.init("iiwa2");
+        c_vel.init("iiwa2");
+        time_to_dist.init("iiwa2");
+        // commands
+        cp_command.init("iiwa2");
+        cpl_command.init("iiwa2");
+        jp_command.init("iiwa2");
+        jv_command.init("iiwa2");
+        // states
+        cw_state.init("iiwa2");
+        cp_state.init("iiwa2");
+        jv_state.init("iiwa2");
+        jp_state.init("iiwa2");
+        exjt_state.init("iiwa2");
+        j_vel.setSmartServoJointSpeedLimits(0.30, 0.30);
 
-    // control_mode2.init("iiwa2");
-    // j_vel2.init("iiwa2");
-    // c_vel2.init("iiwa2");
-    // time_to_dist2.init("iiwa2");
-    // // commands
-    // cp_command2.init("iiwa2");
-    // cpl_command2.init("iiwa2");
-    // jp_command2.init("iiwa2");
-    // jv_command2.init("iiwa2");
-    // // states
-    // cw_state2.init("iiwa2");
-    // cp_state2.init("iiwa2");
-    // jv_state2.init("iiwa2");
-    // jp_state2.init("iiwa2");
-    // exjt_state2.init("iiwa2");
+    }
 
+    if (iiwa1 == true){
+        control_mode2.init("iiwa");
+        j_vel2.init("iiwa");
+        c_vel2.init("iiwa");
+        time_to_dist2.init("iiwa");
+        // commands
+        cp_command2.init("iiwa");
+        cpl_command2.init("iiwa");
+        jp_command2.init("iiwa");
+        jv_command2.init("iiwa");
+        // states
+        cw_state2.init("iiwa");
+        cp_state2.init("iiwa");
+        jv_state2.init("iiwa");
+        jp_state2.init("iiwa");
+        exjt_state2.init("iiwa");
+        j_vel2.setSmartServoJointSpeedLimits(0.15, 0.18);
+    }
 
-    // ros::Publisher chatter_pub = nh.advertise<std_msgs::Float32MultiArray>("Coordinate_public", 1000);
-    // ros::Publisher gripper_command = nh.advertise<std_msgs::Bool>("/iiwa/command/GripperCommand", 1000);
-
-    // gripper
-    std_msgs::Bool gripper;
-    bool open = true;
-    // bool close = false;
-    bool station = true;
-    // gripper.data = open;
-    // gripper_command.publish(gripper);
-
-    // set the cartesian and joints velocity limit
-    // c_vel.setMaxCartesianVelocity(cartesian_velocity);
-    j_vel.setSmartServoJointSpeedLimits(0.9, 1.00);
-    // j_vel2.setSmartServoJointSpeedLimits(1, 1.00);
 
     ros::Duration(0.1).sleep(); // wait to initialize ros topics
-    // std::vector<float> orient = {0.707165002823, 0.707041292473, -0.00230447391603, -0.00221763853181};
 
     int skipper = -1000000;
     time_t curr_time;
@@ -242,7 +206,7 @@ int main(int argc, char **argv)
         perror("socket");
         exit(1);
     }
-    
+
     addr.sin_family = AF_INET;
     addr.sin_port = htons(10000);
     addr.sin_addr.s_addr = htonl(INADDR_ANY);
@@ -255,91 +219,9 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        auto cartesian_position = cp_state.getPose();
-        auto joint_position = jp_state.getPosition();
-        auto force = exjt_state.getTorque();
-        auto joint_speed = jv_state.getVelocity();
-
-
-        // auto cartesian_position2 = cp_state2.getPose();
-        // auto joint_position2 = jp_state2.getPosition();
-        // auto force2 = exjt_state2.getTorque();
-
-        // std_msgs::Float32MultiArray force_msg;
-        // force_msg.data = {force.torque.a1,force.torque.a2,force.torque.a4,force.torque.a5,force.torque.a6};
-        // force_repiter.publish(force_msg);
-
-        // std_msgs::Float32MultiArray position_msg;
-        // position_msg.data = {float(joint_position.position.a1/0.8), float(joint_position.position.a2/0.8 - 3.14/4), -float(force.torque.a4/0.8 + 3.14/4 + 3.14/2), float(joint_position.position.a5),0};
-        // position_repiter.publish(position_msg);
-
-
-
-        // std_msgs::Float32MultiArray msg;
-        // msg.data = {joint_position.position.a1, joint_position.position.a2,
-        //             joint_position.position.a3, joint_position.position.a4, joint_position.position.a5,
-        //             joint_position.position.a6, joint_position.position.a7};
-        // std::cout << msg << std::endl;
-//        ROS_INFO("%s\n\n", msg.data.c_str());
-
-        time_t curr_time;
-        curr_time = time(NULL);
-        nanoseconds ns = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
-
-        time_t mnow = curr_time;
-
-        std::fstream fs;
-        fs.open ("points_Kuka_cpp.txt", std::fstream::in | std::fstream::out | std::fstream::app);
-
-        fs<<"Time  ";
-        fs<< std::to_string((ns).count());
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a1);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a2);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a3);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a4);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a5);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a6);
-        fs<<", ";
-        fs<<std::to_string(joint_position.position.a7);
-        fs<<", ";
-        fs<<'\n';
-        fs.close();
-        // joint_desired_pose[10] = msg.data[10];
-        // joint_desired_pose[11] = msg.data[11];
-
-
-        // chatter_pub.publish(msg);
-
-        // sock = accept(listener, NULL, NULL);
-        // if(sock < 0)
-        // {   perror("accept");
-        //     exit(3);
-        // }
-
-        // // while(1)
-        // // {
-        // bytes_read = recv(sock, buf, 60, 0);
-        //     // if(bytes_read <= 0) break;
-        //     // send(sock, buf, bytes_read, 0);
-        // // }
-
-
-        // auto da = (float*)buf;
-        // std::cout << da[0] << std::endl;
-        // std::cout<<"doshel"<<std::endl;
-        // if(bytes_read <= 0) continue;
-        // close(sock);
-
         bytes_read = recvfrom(sock, buf, 1024, 0, NULL, NULL);
         buf[bytes_read] = '\0';
         auto da = (float*)buf;
-    	// cout<<da[0]<<" "<<da[1]<<endl;
 
         joint_desired_pose[0] = da[0];
         joint_desired_pose[1] = da[1];
@@ -347,81 +229,156 @@ int main(int argc, char **argv)
         joint_desired_pose[3] = da[3];
         joint_desired_pose[4] = da[4];
 
-        joint_position.position.a1 = joint_desired_pose[0];
-        
-        joint_position.position.a2 = (joint_desired_pose[1] + 3.14/4)*0.8;
-        
-        if(joint_position.position.a2 > 1){
-            joint_position.position.a2 = 1;
+        joint_desired_pose[5] = da[5];
+        joint_desired_pose[6] = da[6];
+        joint_desired_pose[7] = da[7];
+        joint_desired_pose[8] = da[8];
+        joint_desired_pose[9] = da[9];
+
+
+        if (iiwa1 == true){
+            auto cartesian_position = cp_state.getPose();
+            auto joint_position = jp_state.getPosition();
+            auto force = exjt_state.getTorque();
+            auto joint_speed = jv_state.getVelocity();
+
+            joint_position.position.a1 = joint_desired_pose[0]*0.8;
+            joint_position.position.a2 = (joint_desired_pose[1] + 3.14/4 + 0.15)*0.8;
+            if(joint_position.position.a2 > 1.15){
+                joint_position.position.a2 = 1.15;
+            }
+            joint_position.position.a4 = (-joint_desired_pose[2] - 3.14/2 - 3.14/4)*0.8;
+            cout<<joint_position.position.a4<<endl;
+            if(joint_position.position.a4 < -1.8){
+                joint_position.position.a4 = -1.8;
+            }
+            joint_position.position.a5 = joint_desired_pose[3];
+            std::cout<<std::to_string(cartesian_position.poseStamped.pose.position.z)<<std::endl;
+            // joint_position.position.a6 = 0;
+
+            joint_position.position.a6 = joint_desired_pose[4];
+            if (joint_position.position.a6 > 0.0){
+                joint_position.position.a6 = 0;
+            }
+            jp_command.setPosition(joint_position);
+
+            if (read_write == true){
+                time_t curr_time;
+                curr_time = time(NULL);
+                nanoseconds ns = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
+                time_t mnow = curr_time;
+                std::fstream fs;
+                fs.open ("datas_iiwa1_coord.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a1);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a2);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a3);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a4);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a5);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a6);
+                fs<<", ";
+                fs<<std::to_string(joint_position.position.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+
+                fs.open ("datas_iiwa1_speed.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a1);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a2);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a3);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a4);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a5);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a6);
+                fs<<", ";
+                fs<<std::to_string(joint_speed.velocity.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+            }
         }
-        joint_position.position.a4 = (-joint_desired_pose[2] - 3.14/2 - 3.14/4)*0.8;
-        if(joint_position.position.a4 < -1.7){
-            joint_position.position.a4 = -1.7;
-        }
-        joint_position.position.a5 = joint_desired_pose[3];
 
-        // joint_position.position.a6 = 0;
+        if(iiwa2 == true){
+            auto cartesian_position2 = cp_state2.getPose();
+            auto joint_position2 = jp_state2.getPosition();
+            auto force2 = exjt_state2.getTorque();
+            auto joint_speed2 = jv_state2.getVelocity();
 
-        // joint_position.position.a6 = (joint_desired_pose[4] * 2.65);
-        // if(abs(joint_position.position.a6) < 0.1){
-        //     joint_position.position.a6 = 0;
-        // }
+            joint_position2.position.a1 = joint_desired_pose[5];
+            joint_position2.position.a2 = (-joint_desired_pose[6] + 3.14/4)*0.8;
+            if(joint_position2.position.a2 > 1){
+                joint_position2.position.a2 = 1;
+            }
+            joint_position2.position.a4 = (joint_desired_pose[7] - 3.14/2 - 3.14/4)*0.8;
+            if(joint_position2.position.a4 < -1.7){
+                joint_position2.position.a4 = -1.7;
+            }
+            joint_position2.position.a5 = (joint_desired_pose[8])*0.8;
+            joint_position2.position.a6 = 0;
+            jp_command2.setPosition(joint_position2);
 
-        jp_command.setPosition(joint_position);
+            if (read_write == true){
+                time_t curr_time;
+                curr_time = time(NULL);
+                nanoseconds ns = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
+                time_t mnow = curr_time;
+                std::fstream fs;
+                fs.open ("datas_iiwa2.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a1);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a2);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a3);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a4);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a5);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a6);
+                fs<<", ";
+                fs<<std::to_string(joint_position2.position.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
 
-
-
-
-        // joint_position2.position.a1 = joint_desired_pose[5]*0.8;        
-        // joint_position2.position.a2 = (-joint_desired_pose[6] + 3.14/4)*0.8;
-        // if(joint_position2.position.a2 > 1){
-        //     joint_position2.position.a2 = 1;
-        // }
-
-
-        // joint_position2.position.a4 = (joint_desired_pose[7] - 3.14/2 - 3.14/4)*0.8;
-        // if(joint_position2.position.a4 < -1.7){
-        //     joint_position2.position.a4 = -1.7;
-        // }
-        // joint_position2.position.a5 = (joint_desired_pose[8]+1.02)*0.8;
-
-
-        // joint_position2.position.a6 = 0;
-
-        // // joint_position.position.a6 = (joint_desired_pose[4] * 2.65);
-        // // if(abs(joint_position.position.a6) < 0.1){
-        // //     joint_position.position.a6 = 0;
-        // // }
-        // jp_command2.setPosition(joint_position2);
-        // std::cout<<std::to_string(force.torque.a5)<<" "<<std::to_string(joint_position.position.a5)<<std::endl;
-
-        // if(abs(joint_desired_pose[5]) > 1.00 and station){
-        //     gripper.data = close;
-        //     gripper_command.publish(gripper);
-        //     ros::Duration(0.2).sleep();
-        //     station = false;
-
-        // }
-        // if(abs(joint_desired_pose[5]) < 1.00 and !station){
-        //     gripper.data = open;
-        //     gripper_command.publish(gripper);
-        //     ros::Duration(0.2).sleep();
-        //     station = true;
-        
-
-        // }
-        if (fabs(joint_desired_pose[0] - joint_position.position.a4) > 0 or
-            fabs(joint_desired_pose[1] - joint_position.position.a1) > 0 or
-            fabs(joint_desired_pose[2] - joint_position.position.a6) > 0)
-        {
-            // joint_position.position.a1 = joint_desired_pose[1];
-            // joint_position.position.a6 = joint_desired_pose[2];
-            // joint_position.position.a4 = -3.14/2 - joint_desired_pose[0];
-            // init_pos.pose.position.x = desired_pose[0];
-            // init_pos.pose.position.y = desired_pose[1];
-            // init_pos.pose.position.z = desired_pose[2];
-            // jp_command.setPosition(joint_position);
-                // std::cout<<std::to_string(joint_desired_pose[0])<<", "<<std::to_string(joint_desired_pose[1])<<", "<<std::to_string(joint_position.position.a4)<<", "<<std::to_string(joint_desired_pose[3])<<std::endl;
+                fs.open ("datas_iiwa2_speed.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a1);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a2);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a3);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a4);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a5);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a6);
+                fs<<", ";
+                fs<<std::to_string(joint_speed2.velocity.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+            }
         }
     }
 }
