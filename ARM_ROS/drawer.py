@@ -11,7 +11,7 @@ with open('/home/r/PycharmProjects/ARM_ex/points_Kuka_cpp.txt') as f:
         l = line.split(", ")
         t = l[0][4:]
         t = (float(t))/1000000000
-        kuka_time.append(t - 1647644593.4428484)
+        kuka_time.append(t - 1648217155.7793157)
 
         q1 = l[1]
         q1 = float(q1)
@@ -19,7 +19,7 @@ with open('/home/r/PycharmProjects/ARM_ex/points_Kuka_cpp.txt') as f:
 
 data = pd.read_csv("/home/r/PycharmProjects/ARM_ex/points_raspberry.csv")
 arm_time = data['time'].values
-arm_time_m = [i - 1647644593.4428484 for i in arm_time]
+arm_time_m = [i - 1648217155.7793157 for i in arm_time]
 # force.torque.a4/0.8 + 3.14/4 + 3.14/2
 # time,q1,q2,q3,q4,q5,q6,q7,q8,q9,q10
 arm_pos_q1 = data['q1'].values
