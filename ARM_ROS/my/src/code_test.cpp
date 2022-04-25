@@ -326,7 +326,6 @@ int main(int argc, char **argv)
                 fs.close();
             }
         }
-
         if(iiwa2 == true){
             auto cartesian_position2 = cp_state2.getPose();
             auto joint_position2 = jp_state2.getPosition();

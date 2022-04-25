@@ -10,6 +10,7 @@ import math
 import numpy as np
 import csv
 
+
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
 Us = 0
 Val_mins = 0
