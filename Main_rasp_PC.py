@@ -8,8 +8,28 @@ from struct import *
 import time
 import math
 import numpy as np
+import csv
 
 a1, a2, a3, a4 = 0.08, 0, 0.39, 0.32
+Us = 0
+Val_mins = 0
+Val_maxs = 0
+enable = 0
+
+Us1 = 0
+Val_mins1 = 0
+Val_maxs1 = 0
+enable1 = 0
+
+Us_Elbow = 0
+Val_mins_ELbow = 0
+Val_maxs_ELbow = 0
+enable_Elbow = 0
+
+Us_Shoulder = 0
+Val_mins_Shoulder = 0
+Val_maxs_Shoulder = 0
+enable_Shoulder = 0
 
 
 def send(data, port=10003, addr='192.169.2.15'):
@@ -68,16 +88,27 @@ if __name__ == '__main__':
     Val_mins = 0
     Val_maxs = 0
     enable = 0
+
+    Us1 = 0
+    Val_mins1 = 0
+    Val_maxs1 = 0
+    enable1 = 0
+    skiper = 0
+    time_init = time.time()
+
+    deltaR_val_RWrist = -4520
+    deltaL_val_LWrist = -6720
+    delta_R_Shoulder_val = -2280
+
     while (True):
         # all this values in angels
         sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         sock.bind((UDP_IP, UDP_PORT))
         frame = []
-        # 2, MODE, int(Us), TORQUE, CENTER, STIFF, enable, int(Val_maxs), int(Val_maxs),
         pa = pack(
             'bbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhhbbhhhhhhh',
             1, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # плечо левая
-            2, MODE, int(Us), 0, CENTER, STIFF, enable, int(Val_maxs), int(Val_mins),  # кисть
+            2, MODE, int(Us), TORQUE, CENTER, STIFF, enable, int(Val_maxs), int(Val_maxs),  # кисть
             3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,  # локоть
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(490 + 60 / 0.085), int(490 + 20 / 0.085),  # большой
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, int(2029 + 60 / 0.085), int(2029 + 70 / 0.085),  # указательный
@@ -86,9 +117,10 @@ if __name__ == '__main__':
             # int((2478 + 60/0.085)),int(2478 + 10/0.085),#безымянный()
             8, MODE, ANGLE, 3000, CENTER, STIFF, 0, 3000, 3200,  # мизинец()
 
-            1, MODE, 200, TORQUE, CENTER, STIFF, 0, 3200, 3100,  # правая
-            2, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
-            3, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
+            1, MODE, int(Us_Shoulder), TORQUE, CENTER, STIFF, enable_Shoulder, int(Val_maxs_Shoulder),
+            int(Val_mins_Shoulder),  # правая
+            2, MODE, int(Us1), TORQUE, CENTER, STIFF, enable1, int(Val_maxs1), int(Val_mins1),
+            3, MODE, int(Us_Elbow), TORQUE, CENTER, STIFF, enable_Elbow, int(Val_maxs_ELbow), int(Val_mins_ELbow),
             4, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             5, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
             6, MODE, ANGLE, TORQUE, CENTER, STIFF, 0, POSMIN, POSMAX,
@@ -102,9 +134,9 @@ if __name__ == '__main__':
         L_Shoulder_S = (struct.unpack('h', data[270:272])[0] - 2150) * 0.08789063  # correct
         L_ElbowR = (struct.unpack('h', data[268:270])[0] - 2088) * 0.08789063  # correct
         L_Elbow = struct.unpack('h', data[34:36])[0] * -0.02  # correct
-        L_WristR = (5000 - struct.unpack('h', data[18:20])[0]) * 0.085  # correct
-        L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) - 2630) * 0.08789063  # incorrect?
-        L_WristF = ((0 - struct.unpack('h', data[264:266])[0]) - 2230) * 0.08789063
+        L_WristR = (deltaL_val_LWrist - struct.unpack('h', data[18:20])[0]) * 0.085  # correct
+        L_WristS = ((0 - struct.unpack('h', data[264:266])[0]) + 2630) * -0.08789063  # incorrect?
+        L_WristF = ((2088 - struct.unpack('h', data[266:268])[0])) * 0.08789063
         # block for fingers
         L_Index = (-2029 + struct.unpack('h', data[66:68])[0]) * -0.085  # correct
         L_Little = (-3615 + struct.unpack('h', data[114:116])[0]) * -0.085  # correct
@@ -112,124 +144,103 @@ if __name__ == '__main__':
         L_Ring = -(2458 - struct.unpack('h', data[98:100])[0]) * 0.085  # correct
         L_Thumb = -(490 - struct.unpack('h', data[50:52])[0]) * 0.085
 
-        R_ShoulderF = struct.unpack('h', data[130:132])[0] * 0.085
+        R_ShoulderF = (-delta_R_Shoulder_val + struct.unpack('h', data[130:132])[0]) * 0.085
         R_Shoulder_S = (struct.unpack('h', data[284:286])[0] - 2150) * 0.08789063  # correct
         R_ElbowR = (struct.unpack('h', data[278:280])[0] - 2018) * 0.08789063  # correct
         R_Elbow = struct.unpack('h', data[162:164])[0] * -0.02  # correct
-        R_WristR = (0 - struct.unpack('h', data[146:148])[0]) * 0.085  # correct
+        R_WristR = (deltaR_val_RWrist - struct.unpack('h', data[146:148])[0]) * 0.085  # correct
         R_WristS = ((0 - struct.unpack('h', data[282:284])[0]) + 2040) * 0.08789063  # incorrect?
         R_WristF = ((0 - struct.unpack('h', data[280:282])[0]) + 2160) * 0.08789063
 
-
         q1, q2, q3, q4, q5, q6, q7 = math.radians(L_ShoulderF), math.radians(L_Shoulder_S), math.radians(
             L_ElbowR), math.radians(L_Elbow), math.radians(L_WristR), math.radians(L_WristS), math.radians(L_WristF)
-        q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR),\
-                                          math.radians(R_Elbow), math.radians(R_WristR), math.radians(R_WristS), math.radians(R_WristF)
-        delta_W = (q12 - q5)
-        Kp_s = -110
-        # target = -5000
-        # delt = abs(struct.unpack('h', data[18:20])[0] - target)
-        # Us = Kp_s*np.sign(struct.unpack('h', data[18:20])[0] - target)
-        # Val_mins = target
-        # Val_maxs = target
+        q8, q9, q10, q11, q12, q13, q14 = math.radians(R_ShoulderF), math.radians(R_Shoulder_S), math.radians(R_ElbowR), \
+                                          math.radians(R_Elbow), math.radians(R_WristR), math.radians(
+            R_WristS), math.radians(R_WristF)
 
-        Val_mins = -(500+R_WristR / 0.085)
-        Val_maxs = -(500+R_WristR / 0.085)
-        # enable = 36
-        Us = Kp_s * np.sign(delta_W)
+        udp_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        addr = ('192.168.10.176', 10000)
+        values = (q3, q1 - 0.25, q4, q5, q7 - 0.8, q10, q8, q11, q12, q14)
 
-        # if q12 > q5:
-        #     Us = -Kp_s * delta_W
-        # else:
-        #     Us = Kp_s * delta_W * np.sign(delta_W)
+        packer = struct.Struct('f f f f f f f f f f')
+        packed_data = packer.pack(*values)
+        udp_socket.sendto(packed_data, addr)
 
-        # if q12 > 0.02:
-        #     Val_mins = -R_WristR / 0.085
-        #     Val_maxs = -(R_WristR / 0.085)
-        #     if q12 > q5:
-        #         Us = -Kp_s * delta_W
-        #     else:
-        #         Us = Kp_s * delta_W * np.sign(delta_W)
-        # else:
-        #     Val_mins = R_WristR / 0.085
-        #     Val_maxs = (R_WristR / 0.085)
-        #     if q12 < q5:
-        #         Us = (Kp_s)
-        #     else:
-        #         Us = -(Kp_s)
-        print(round(struct.unpack('h', data[18:20])[0],2), struct.unpack('h', data[146:148])[0], round(Us,2))
-        # print('left ',round(q1,2), round(q2,2), round(q3,2), round(q4,2), round(q5,2), round(q6,2), round(q7,2),
-        #       'righ ',round(q8,2), round(q9,2), round(q10,2), round(q11,2), round(q12,2), round(q13,2), round(q14,2))
+        data1 = udp_socket.recvfrom(80)
+        data_unpacked = struct.unpack("f f f f f f f f f f f f f f f f f f f f", data1[0])
+        udp_socket.close()
 
+        enable1 = 30
+        Val_maxs = -6800
+        Val_mins = -6800
 
+        # модуль на правую руку рабочий на смещение относительно угла
+        Val_maxs1test = -(np.rad2deg(data_unpacked[13] / 0.8) / 0.085 - deltaR_val_RWrist)
+        # Val_mins1 = -round(data_unpacked[13]/0.8,2)/0.085 + deltaR_val-1000
+        force_kuka1 = round(data_unpacked[18])
+        delta_angles = struct.unpack('h', data[146:148])[0] - Val_maxs1
+        Val_maxs1 = Val_maxs1test
+        Val_mins1 = Val_maxs1test
+        Val_maxs1 = Val_maxs1 + np.sign(Val_maxs1) * (np.sign(force_kuka1) * 50)
+        Val_mins1 = Val_mins1 + np.sign(Val_mins1) * (np.sign(force_kuka1) * 50)
+        # print(round(q12,2), struct.unpack('h', data[146:148])[0], round(Val_maxs1,2),R_WristR, delta_angles, Val_maxs1test)
 
-        # q7 = q7 + 6.57
-        # print(q3, q1, q4, q5, q7)
-        # print('Exoskeleton_data got')
-        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # server_address = ('10.100.20.119', 10000)
-        # sock.connect(server_address)
-        #
-        # values = (q3, q1, q4, q5, q7)
-        # # values = (10, 15, 20, 25)
-        # packer = struct.Struct('f f f f f')
-        # packed_data = packer.pack(*values)
-        # try:
-        #     sock.sendall(packed_data)
-        #     data = sock.recv(20)
-        #     # time.sleep(0.5)
-        #     print(struct.unpack("f f f f", data))
-        # finally:
-        #     sock.close()
+        if abs(delta_angles) < 40:
+            enable1 = 30
+        else:
+            enable1 = 30
+        Us1 = -delta_angles * 0.0
+        Us1_prime = Us1
+        Us1 = Us1 - np.sign(force_kuka1) * abs(force_kuka1) * 20
+        # на сучай некоректности расчета калибруется на каждом запуске
+        if struct.unpack('h', data[146:148])[0] < -6100 or struct.unpack('h', data[146:148])[0] > -3000:
+            enable1 = 30
+        # модуль на правую руку рабочий на смещение относительно угла
+        # print(Us1, round(Val_maxs1test,2), round(struct.unpack('h', data[146:148])[0],2), Val_mins1, force_kuka1)
+        if abs(Us1) > 300:
+            Us1 = 70
+            enable1 = 30
 
-        time.sleep(0.05)
-        # print('left ',q3, q1, q4, q5, q7, 'right ', q10, q8, q11, q12, q14)
-        # print('Exoskeleton_data got')
+        # print(round(struct.unpack('h', data[146:148])[0],2))
 
+        force_elbow = data_unpacked[17]
 
+        Val_maxs_ELbow = np.rad2deg(data_unpacked[12] / 0.8 + 3.14 / 2 + 3.14 / 4) / -0.02
+        Val_mins_ELbow = np.rad2deg(data_unpacked[12] / 0.8 + 3.14 / 2 + 3.14 / 4) / -0.02
+        Val_maxs_ELbow = Val_maxs_ELbow + np.sign(Val_mins_ELbow) * (np.sign(force_elbow) * 50)
+        Val_mins_ELbow = Val_mins_ELbow + np.sign(Val_mins_ELbow) * (np.sign(force_elbow) * 50)
 
+        delta_angles_elbow = struct.unpack('h', data[162:164])[0] - Val_maxs_ELbow
+        if data_unpacked[12] < -1.699999999999:
+            delta_angles_elbow = 0
+        if abs(delta_angles_elbow) < 70:
+            enable_Elbow = 30
+        else:
+            enable_Elbow = 30
+        Us_Elbow_prime = -delta_angles_elbow * 0.0
+        Us_Elbow = Us_Elbow_prime - np.sign(force_elbow) * abs(force_elbow) * 10
+        # print(round(R_Elbow,2), struct.unpack('h', data[162:164])[0], int(Us_Elbow), delta_angles_elbow)
+        # print('delta = ', int(delta_angles_elbow), 'Val_max = ',int(Val_maxs_ELbow),'Us_Elbow = ', int(Us_Elbow), round(np.rad2deg(data_unpacked[12]/0.8 + 3.14/2 + 3.14/4),2)/-0.02, int(struct.unpack('h', data[162:164])[0]),data_unpacked[17])
+        # на сучай некоректности расчета
 
+        force_Shoulder = data_unpacked[16]
+        Val_maxs_Shoulder = (-np.rad2deg(data_unpacked[11] / 0.8 - 3.14 / 4)) / 0.085 + delta_R_Shoulder_val
+        Val_mins_Shoulder = (-np.rad2deg(data_unpacked[11] / 0.8 - 3.14 / 4)) / 0.085 + delta_R_Shoulder_val
+        Val_maxs_Shoulder = Val_maxs_Shoulder + np.sign(Val_maxs_Shoulder) * (np.sign(force_Shoulder) * 30)
+        Val_mins_Shoulder = Val_mins_Shoulder + np.sign(Val_mins_Shoulder) * (np.sign(force_Shoulder) * 30)
 
+        delta_angles_Shoulder = struct.unpack('h', data[130:132])[0] - Val_maxs_Shoulder
 
+        if abs(delta_angles_Shoulder) < 10:
+            enable_Shoulder = 30
+        else:
+            enable_Shoulder = 30
+        Us_Shoulder_Prime = -delta_angles_Shoulder * 0.0
+        Us_Shoulder = Us_Shoulder_Prime - np.sign(force_Shoulder) * abs(force_Shoulder) * 5
+        # print(round(Us_Shoulder,2), struct.unpack('h', data[146:148])[0], round(Val_maxs1,2),R_WristR, delta_angles_Shoulder)
 
-
-
-
-
-
-
-
-
-
-        # sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        # server_address = ('10.100.20.119', 10000)
-        # sock.connect(server_address)
-        #
-        # values = (q3, q1, q4, q5, q7,   q10, q8, q11, q12, q14)
-        # # values = (10, 15, 20, 25)
-        # packer = struct.Struct('f f f f f f f f f f')
-        # packed_data = packer.pack(*values)
-        # try:
-        #     sock.sendall(packed_data)
-        #     data = sock.recv(60)
-        #     # time.sleep(0.5)
-        #     # print(struct.unpack("f f f f f f f f f f f f f f f", data))
-        #     recieved_data = struct.unpack("f f f f f f f f f f f f f f f", data)
-        #     delta_W = recieved_data[13] - q5
-        #
-        #
-        #
-        #     Kp_s = 150
-        #     Val_mins = L_WristR / 0.085 + recieved_data[3] * 1000
-        #     Val_maxs = (L_WristR / 0.085 + np.sign(delta_W) * 10 + recieved_data[3] * 1000)
-        #     if abs(delta_W) < 0.05 or not (abs(recieved_data[3]*15) > 1.5):
-        #         enable = 0
-        #     else:
-        #         enable = 36
-        #     if q12 > q5:
-        #         Us = -Kp_s * delta_W * np.sign(delta_W)
-        #     else:
-        #         Us = Kp_s * delta_W * np.sign(delta_W)
-        #     print(round(recieved_data[3], 2), round(Val_maxs,2), round(recieved_data[3] * 10,2))
-        # finally:
-        #     sock.close()
+        # на сучай некоректности расчета
+        if struct.unpack('h', data[130:132])[0] < -3600 or struct.unpack('h', data[130:132])[0] > -900:
+            enable_Shoulder = 30
+        print(int(Us_Shoulder), round(R_ShoulderF, 2), int(Val_mins_Shoulder), struct.unpack('h', data[130:132])[0],
+              data_unpacked[16], -np.rad2deg(data_unpacked[11] / 0.8 - 3.14 / 4))

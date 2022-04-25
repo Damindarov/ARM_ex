@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Implemented one side force applying. Start dev back force">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main_rasp_PC.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp_PC.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
