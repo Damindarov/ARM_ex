@@ -145,44 +145,44 @@ int main(int argc, char **argv)
 
     ros::spinOnce();
     // *** initialize ***
-    if (iiwa2 == true){
+    if (iiwa1 == true){
         // services
-        control_mode.init("iiwa2");
-        j_vel.init("iiwa2");
-        c_vel.init("iiwa2");
-        time_to_dist.init("iiwa2");
+        control_mode.init("iiwa");
+        j_vel.init("iiwa");
+        c_vel.init("iiwa");
+        time_to_dist.init("iiwa");
         // commands
-        cp_command.init("iiwa2");
-        cpl_command.init("iiwa2");
-        jp_command.init("iiwa2");
-        jv_command.init("iiwa2");
+        cp_command.init("iiwa");
+        cpl_command.init("iiwa");
+        jp_command.init("iiwa");
+        jv_command.init("iiwa");
         // states
-        cw_state.init("iiwa2");
-        cp_state.init("iiwa2");
-        jv_state.init("iiwa2");
-        jp_state.init("iiwa2");
-        exjt_state.init("iiwa2");
+        cw_state.init("iiwa");
+        cp_state.init("iiwa");
+        jv_state.init("iiwa");
+        jp_state.init("iiwa");
+        exjt_state.init("iiwa");
         j_vel.setSmartServoJointSpeedLimits(0.30, 0.30);
 
     }
 
-    if (iiwa1 == true){
-        control_mode2.init("iiwa");
-        j_vel2.init("iiwa");
-        c_vel2.init("iiwa");
-        time_to_dist2.init("iiwa");
+    if (iiwa2 == true){
+        control_mode2.init("iiwa2");
+        j_vel2.init("iiwa2");
+        c_vel2.init("iiwa2");
+        time_to_dist2.init("iiwa2");
         // commands
-        cp_command2.init("iiwa");
-        cpl_command2.init("iiwa");
-        jp_command2.init("iiwa");
-        jv_command2.init("iiwa");
+        cp_command2.init("iiwa2");
+        cpl_command2.init("iiwa2");
+        jp_command2.init("iiwa2");
+        jv_command2.init("iiwa2");
         // states
-        cw_state2.init("iiwa");
-        cp_state2.init("iiwa");
-        jv_state2.init("iiwa");
-        jp_state2.init("iiwa");
-        exjt_state2.init("iiwa");
-        j_vel2.setSmartServoJointSpeedLimits(0.15, 0.18);
+        cw_state2.init("iiwa2");
+        cp_state2.init("iiwa2");
+        jv_state2.init("iiwa2");
+        jp_state2.init("iiwa2");
+        exjt_state2.init("iiwa2");
+        j_vel2.setSmartServoJointSpeedLimits(0.16, 0.16);
     }
 
 
@@ -196,7 +196,8 @@ int main(int argc, char **argv)
     using namespace std;
     // cout<<"blua"<<endl;
     int sock;
-    struct sockaddr_in addr;
+    struct sockaddr_in addr, cliAddr;
+    socklen_t cliAddrLen;
     char buf[1024];
     int bytes_read;
 
@@ -219,9 +220,11 @@ int main(int argc, char **argv)
 
     while (true)
     {
-        bytes_read = recvfrom(sock, buf, 1024, 0, NULL, NULL);
+        cliAddrLen = sizeof(cliAddr);
+        bytes_read = recvfrom(sock, buf, 1024, 0, (struct sockaddr*)&cliAddr, &cliAddrLen);
         buf[bytes_read] = '\0';
         auto da = (float*)buf;
+    	float msg[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 
         joint_desired_pose[0] = da[0];
         joint_desired_pose[1] = da[1];
@@ -236,11 +239,23 @@ int main(int argc, char **argv)
         joint_desired_pose[9] = da[9];
 
 
+
         if (iiwa1 == true){
             auto cartesian_position = cp_state.getPose();
             auto joint_position = jp_state.getPosition();
             auto force = exjt_state.getTorque();
             auto joint_speed = jv_state.getVelocity();
+            msg[0] = joint_position.position.a1;
+            msg[1] = joint_position.position.a2;
+            msg[2] = joint_position.position.a4;
+            msg[3] = joint_position.position.a5;
+            msg[4] = joint_position.position.a6;
+
+            msg[5] = force.torque.a1;
+            msg[6] = force.torque.a2;
+            msg[7] = force.torque.a4;
+            msg[8] = force.torque.a5;
+            msg[9] = force.torque.a6;
 
             joint_position.position.a1 = joint_desired_pose[0]*0.8;
             joint_position.position.a2 = (joint_desired_pose[1] + 3.14/4 + 0.15)*0.8;
@@ -253,7 +268,7 @@ int main(int argc, char **argv)
                 joint_position.position.a4 = -1.8;
             }
             joint_position.position.a5 = joint_desired_pose[3];
-            std::cout<<std::to_string(cartesian_position.poseStamped.pose.position.z)<<std::endl;
+            // std::cout<<std::to_string(cartesian_position.poseStamped.pose.position.z)<<std::endl;
             // joint_position.position.a6 = 0;
 
             joint_position.position.a6 = joint_desired_pose[4];
@@ -318,7 +333,18 @@ int main(int argc, char **argv)
             auto force2 = exjt_state2.getTorque();
             auto joint_speed2 = jv_state2.getVelocity();
 
-            joint_position2.position.a1 = joint_desired_pose[5];
+            msg[10] = joint_position2.position.a1;
+            msg[11] = joint_position2.position.a2;
+            msg[12] = joint_position2.position.a4;
+            msg[13] = joint_position2.position.a5;
+            msg[14] = joint_position2.position.a6;
+
+            msg[15] = force2.torque.a1;
+            msg[16] = force2.torque.a2;
+            msg[17] = force2.torque.a4;
+            msg[18] = force2.torque.a5;
+            msg[19] = force2.torque.a6;
+            // joint_position2.position.a1 = joint_desired_pose[5];
             joint_position2.position.a2 = (-joint_desired_pose[6] + 3.14/4)*0.8;
             if(joint_position2.position.a2 > 1){
                 joint_position2.position.a2 = 1;
@@ -327,8 +353,11 @@ int main(int argc, char **argv)
             if(joint_position2.position.a4 < -1.7){
                 joint_position2.position.a4 = -1.7;
             }
-            joint_position2.position.a5 = (joint_desired_pose[8])*0.8;
-            joint_position2.position.a6 = 0;
+
+            // joint_position2.position.a5 = (joint_desired_pose[8])*0.8;
+            // std::cout << to_string(joint_position2.position.a5) << std::endl;
+
+            joint_position2.position.a6 = -0.8;
             jp_command2.setPosition(joint_position2);
 
             if (read_write == true){
@@ -379,6 +408,12 @@ int main(int argc, char **argv)
                 fs<<'\n';
                 fs.close();
             }
+        }
+
+        if (sendto(sock, msg, 80, 0, (struct sockaddr*)&cliAddr, cliAddrLen) < 0) {
+            perror("sending error...\n");
+            close(sock);
+            exit(-1);
         }
     }
 }
