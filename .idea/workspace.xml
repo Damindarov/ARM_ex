@@ -6,8 +6,10 @@
   <component name="ChangeListManager">
     <list default="true" id="78acceba-afbf-4e15-8e38-ab86e6fbc26a" name="Default Changelist" comment="Add new rasp code, force feedback with low speed kuka implemented">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/data_point_ROS_part.csv" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/ARM_ROS/drawer_speed_cooridnates.py" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/drawer_speed_cooridnates.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/ARM_ROS/my/src/code_test.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Main_rasp_PC.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp_PC.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Main_rasp.py" beforeDir="false" afterPath="$PROJECT_DIR$/Main_rasp.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -49,15 +51,14 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">
-    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
-    <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
-    <property name="com.intellij.ide.scratch.ScratchImplUtil$2/New Scratch File" value="Python" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/ARM_ROS" />
-    <property name="settings.editor.selected.configurable" value="project.propVCSSupport.Mappings" />
-  </component>
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;last_opened_file_path&quot;: &quot;/home/r/PycharmProjects/ARM_ex/ARM_ROS/my&quot;
+  }
+}</component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/ARM_ROS/my" />
       <recent name="$PROJECT_DIR$/ARM_ROS" />
       <recent name="$PROJECT_DIR$" />
       <recent name="$PROJECT_DIR$/ARM_ROS/my/src" />
@@ -244,16 +245,16 @@
       <item itemvalue="Python.plot34" />
       <item itemvalue="Python.drawer" />
       <item itemvalue="Python.drawer_speed_cooridnates" />
-      <item itemvalue="Python.scratch" />
-      <item itemvalue="Python.hand" />
       <item itemvalue="Python.hand2" />
+      <item itemvalue="Python.hand" />
+      <item itemvalue="Python.scratch" />
     </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.hand2" />
+        <item itemvalue="Python.drawer_speed_cooridnates" />
         <item itemvalue="Python.hand" />
         <item itemvalue="Python.scratch" />
-        <item itemvalue="Python.drawer_speed_cooridnates" />
         <item itemvalue="Python.drawer" />
       </list>
     </recent_temporary>
@@ -564,7 +565,14 @@
       <option name="project" value="LOCAL" />
       <updated>1650885495037</updated>
     </task>
-    <option name="localTasksCounter" value="43" />
+    <task id="LOCAL-00043" summary="Add new rasp code, force feedback with low speed kuka implemented">
+      <created>1650885641515</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1650885641515</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">

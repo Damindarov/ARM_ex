@@ -9,9 +9,6 @@
 #include <ctime>
 #include <sys/time.h>
 #include <chrono>
-
-
-
 // services
 #include <iiwa_ros/service/control_mode.hpp>
 #include <iiwa_ros/service/path_parameters.hpp>
@@ -38,7 +35,7 @@
 #include <std_msgs/Float32MultiArray.h>
 #include <std_msgs/Bool.h>
 
-#include <sys/types.h> 
+#include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <unistd.h>
@@ -65,22 +62,47 @@ void pose_callback(std_msgs::Float32MultiArray msg)
         joint_desired_pose[7] = msg.data[7];
         joint_desired_pose[8] = msg.data[8];
         joint_desired_pose[9] = msg.data[9];
+        time_t curr_time;
+        curr_time = time(NULL);
+        nanoseconds ns = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
+        time_t mnow = curr_time;
+        std::fstream fs;
+        fs.open ("datas_iiwa2_listener.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+        fs<<"Time  ";
+        fs<< std::to_string((ns).count());
+        fs<<", ";
+        fs<<std::to_string(joint_desired_pose[5]);
+        fs<<", ";
+        fs<<std::to_string(joint_desired_pose[6]);
+        fs<<", ";
+        fs<<std::to_string(0);
+        fs<<", ";
+        fs<<std::to_string(joint_desired_pose[7]);
+        fs<<", ";
+        fs<<std::to_string(joint_desired_pose[8]);
+        fs<<", ";
+        fs<<std::to_string(joint_desired_pose[9]);
+        fs<<", ";
+        fs<<std::to_string(0);
+        fs<<", ";
+        fs<<'\n';
+        fs.close();
 }
 
 int main(int argc, char **argv)
 {
     bool iiwa1 = false;
     bool iiwa2 = true;
-    bool read_write = false;
+    bool read_write = true;
 
     ros::init(argc, argv, "tele_iiwa");
     ros::NodeHandle nh;
     // ros spinner
-    ros::AsyncSpinner spinner(1);
+    ros::AsyncSpinner spinner(0);
     spinner.start();
     // Wait a bit, so that you can be sure the subscribers are connected.
-    ros::Duration(0.05).sleep();
 
+    ros::Duration(0.05).sleep();
 
     // *** decleare ***
     // services
@@ -132,16 +154,13 @@ int main(int argc, char **argv)
 
     double vel = 0.75;
     double Jvel = 0.15;
-    cartesian_velocity.linear.x = vel;
-    cartesian_velocity.linear.y = vel;
-    cartesian_velocity.linear.z = vel;
-    cartesian_velocity.angular.x = vel;
-    cartesian_velocity.angular.y = vel;
-    cartesian_velocity.angular.z = vel;
-    ros::Subscriber sub = nh.subscribe("/lefttop_point", 1000, pose_callback);
-
-    ros::Publisher force_repiter = nh.advertise<std_msgs::Float32MultiArray>("force_repiter", 1000);
-    ros::Publisher position_repiter = nh.advertise<std_msgs::Float32MultiArray>("position_repiter", 1000);
+    // cartesian_velocity.linear.x = vel;
+    // cartesian_velocity.linear.y = vel;
+    // cartesian_velocity.linear.z = vel;
+    // cartesian_velocity.angular.x = vel;
+    // cartesian_velocity.angular.y = vel;
+    // cartesian_velocity.angular.z = vel;
+    ros::Subscriber sub = nh.subscribe("/exoskeleton_data", 1, pose_callback);
 
     ros::spinOnce();
     // *** initialize ***
@@ -182,7 +201,7 @@ int main(int argc, char **argv)
         jv_state2.init("iiwa2");
         jp_state2.init("iiwa2");
         exjt_state2.init("iiwa2");
-        j_vel2.setSmartServoJointSpeedLimits(0.16, 0.16);
+        j_vel2.setSmartServoJointSpeedLimits(0.5, 0.5);
     }
 
 
@@ -192,72 +211,24 @@ int main(int argc, char **argv)
     time_t curr_time;
     curr_time = time(NULL);
     nanoseconds ns_init = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
-
     using namespace std;
-    // cout<<"blua"<<endl;
-    int sock;
-    struct sockaddr_in addr, cliAddr;
-    socklen_t cliAddrLen;
-    char buf[1024];
-    int bytes_read;
 
-    sock = socket(AF_INET, SOCK_DGRAM, 0);
-    if(sock < 0)
-    {
-        perror("socket");
-        exit(1);
-    }
+    ros::Publisher force_IIWA2 = nh.advertise<std_msgs::Float32MultiArray>("Force_iiwa2", 10);
+    ros::Publisher force_IIWA = nh.advertise<std_msgs::Float32MultiArray>("Force_iiwa", 10);
 
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons(10000);
-    addr.sin_addr.s_addr = htonl(INADDR_ANY);
-    if(bind(sock, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-    {
-        perror("bind");
-        exit(2);
-    }
+    ros::Publisher pos_IIWA2 = nh.advertise<std_msgs::Float32MultiArray>("pos_iiwa2", 10);
+    ros::Publisher pos_IIWA = nh.advertise<std_msgs::Float32MultiArray>("pos_iiwa", 10);
 
-
+    int skiper = 0;
     while (true)
     {
-        cliAddrLen = sizeof(cliAddr);
-        bytes_read = recvfrom(sock, buf, 1024, 0, (struct sockaddr*)&cliAddr, &cliAddrLen);
-        buf[bytes_read] = '\0';
-        auto da = (float*)buf;
-    	float msg[] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-
-        joint_desired_pose[0] = da[0];
-        joint_desired_pose[1] = da[1];
-        joint_desired_pose[2] = da[2];
-        joint_desired_pose[3] = da[3];
-        joint_desired_pose[4] = da[4];
-
-        joint_desired_pose[5] = da[5];
-        joint_desired_pose[6] = da[6];
-        joint_desired_pose[7] = da[7];
-        joint_desired_pose[8] = da[8];
-        joint_desired_pose[9] = da[9];
-
-
-
         if (iiwa1 == true){
             auto cartesian_position = cp_state.getPose();
             auto joint_position = jp_state.getPosition();
             auto force = exjt_state.getTorque();
             auto joint_speed = jv_state.getVelocity();
-            msg[0] = joint_position.position.a1;
-            msg[1] = joint_position.position.a2;
-            msg[2] = joint_position.position.a4;
-            msg[3] = joint_position.position.a5;
-            msg[4] = joint_position.position.a6;
 
-            msg[5] = force.torque.a1;
-            msg[6] = force.torque.a2;
-            msg[7] = force.torque.a4;
-            msg[8] = force.torque.a5;
-            msg[9] = force.torque.a6;
-
-            joint_position.position.a1 = joint_desired_pose[0]*0.8;
+            joint_position.position.a1 = joint_desired_pose[0];
             joint_position.position.a2 = (joint_desired_pose[1] + 3.14/4 + 0.15)*0.8;
             if(joint_position.position.a2 > 1.15){
                 joint_position.position.a2 = 1.15;
@@ -324,42 +295,50 @@ int main(int argc, char **argv)
                 fs<<", ";
                 fs<<'\n';
                 fs.close();
+
+                fs.open ("datas_iiwa_force.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(force.torque.a1);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a2);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a3);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a4);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a5);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a6);
+                fs<<", ";
+                fs<<std::to_string(force.torque.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+
+                fs.open ("datas_iiwa1_cartesian_pos.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(cartesian_position.poseStamped.pose.position.x);
+                fs<<", ";
+                fs<<std::to_string(cartesian_position.poseStamped.pose.position.y);
+                fs<<", ";
+                fs<<std::to_string(cartesian_position.poseStamped.pose.position.z);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
             }
         }
+
         if(iiwa2 == true){
             auto cartesian_position2 = cp_state2.getPose();
             auto joint_position2 = jp_state2.getPosition();
             auto force2 = exjt_state2.getTorque();
             auto joint_speed2 = jv_state2.getVelocity();
 
-            msg[10] = joint_position2.position.a1;
-            msg[11] = joint_position2.position.a2;
-            msg[12] = joint_position2.position.a4;
-            msg[13] = joint_position2.position.a5;
-            msg[14] = joint_position2.position.a6;
-
-            msg[15] = force2.torque.a1;
-            msg[16] = force2.torque.a2;
-            msg[17] = force2.torque.a4;
-            msg[18] = force2.torque.a5;
-            msg[19] = force2.torque.a6;
-            // joint_position2.position.a1 = joint_desired_pose[5];
-            joint_position2.position.a2 = (-joint_desired_pose[6] + 3.14/4)*0.8;
-            if(joint_position2.position.a2 > 1){
-                joint_position2.position.a2 = 1;
-            }
-            joint_position2.position.a4 = (joint_desired_pose[7] - 3.14/2 - 3.14/4)*0.8;
-            if(joint_position2.position.a4 < -1.7){
-                joint_position2.position.a4 = -1.7;
-            }
-
-            // joint_position2.position.a5 = (joint_desired_pose[8])*0.8;
-            // std::cout << to_string(joint_position2.position.a5) << std::endl;
-
-            joint_position2.position.a6 = -0.8;
-            jp_command2.setPosition(joint_position2);
-
-            if (read_write == true){
+            if (read_write == true and skiper%10 == 0){
                 time_t curr_time;
                 curr_time = time(NULL);
                 nanoseconds ns = duration_cast< nanoseconds >(system_clock::now().time_since_epoch());
@@ -406,13 +385,60 @@ int main(int argc, char **argv)
                 fs<<", ";
                 fs<<'\n';
                 fs.close();
-            }
-        }
 
-        if (sendto(sock, msg, 80, 0, (struct sockaddr*)&cliAddr, cliAddrLen) < 0) {
-            perror("sending error...\n");
-            close(sock);
-            exit(-1);
+                fs.open ("datas_iiwa2_force.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a1);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a2);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a3);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a4);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a5);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a6);
+                fs<<", ";
+                fs<<std::to_string(force2.torque.a7);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+
+                fs.open ("datas_iiwa2_cartesian_pos.txt", std::fstream::in | std::fstream::out | std::fstream::app);
+                fs<<"Time  ";
+                fs<< std::to_string((ns).count());
+                fs<<", ";
+                fs<<std::to_string(cartesian_position2.poseStamped.pose.position.x);
+                fs<<", ";
+                fs<<std::to_string(cartesian_position2.poseStamped.pose.position.y);
+                fs<<", ";
+                fs<<std::to_string(cartesian_position2.poseStamped.pose.position.z);
+                fs<<", ";
+                fs<<'\n';
+                fs.close();
+            }
+
+            joint_position2.position.a1 = joint_desired_pose[5]*0.7;
+            joint_position2.position.a2 = (-joint_desired_pose[6] + 3.14/4 +0.1)*0.8;
+            if(joint_position2.position.a2 > 1){
+                joint_position2.position.a2 = 1;
+            }
+            joint_position2.position.a4 = (joint_desired_pose[7] - 3.14/2 - 3.14/4)*0.8;
+            if(joint_position2.position.a4 < -1.7){
+                joint_position2.position.a4 = -1.7;
+            }
+
+            joint_position2.position.a5 = (joint_desired_pose[8])*0.8;
+            // std::cout << to_string(joint_position2.position.a5) << std::endl;
+
+            joint_position2.position.a6 = -joint_desired_pose[9]*0.8;
+            joint_position2.position.a7 = 3.14/2;
+            jp_command2.setPosition(joint_position2);
+            skiper++;
+
         }
     }
 }
